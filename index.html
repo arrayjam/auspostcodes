@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+path {
+  fill: none;
+  stroke: #333;
+  strokeWidth: 1.5px;
+}
+
+svg { 
+  border: 1px solid steelblue;
+}
+
+</style>
+<body>
+<script src="/d3.js"></script>
+<script src="/topojson.js"></script>
+<script>
+
+var width = 950,
+    height = 900;
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+path = d3.geo.path(); // XXX make this a var
+
+d3.json("postcodes.json", function(error, postcodes) {
+  console.log(postcodes);
+
+  var postcodesgeo = topojson.object(postcodes, postcodes.objects.postcodesgeo).geometries;
+
+  var mainland_width = 236;
+  var left_margin = 186;
+  var right_margin = 64;
+
+  var all_aus = mainland_width + left_margin + right_margin;
+  var translate_width = width / (all_aus / mainland_width);
+
+
+  projection = d3.geo.albers() // XXX make this a var
+    .translate([translate_width, height / 2])
+    .scale(1400)
+    .rotate([-132.5, 0])
+    .center([0, -26.5]) // Center of Australia, accounting for tasmania
+    .parallels([-36, -18]);
+
+  path.projection(projection);
+
+  window.draw = function() {
+
+    d3.selectAll("path").remove()
+    svg.selectAll("path")
+        .data(postcodesgeo)
+      .enter().append("path")
+        .attr("id", function(d) { return "postcode_" + d.id; })
+        .attr("d", path);
+    
+  }
+  draw();
+
+});
+
+</script>
