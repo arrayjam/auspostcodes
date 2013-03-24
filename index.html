@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-path {
+
+.feature {
+  fill: #ccc;
+}
+
+.mesh {
   fill: none;
-  stroke: #333;
-  strokeWidth: 1.5px;
+  stroke: #fff;
+  stroke-width: .5px;
+  stroke-linejoin: round;
 }
 
 svg { 
@@ -13,6 +19,7 @@ svg {
 
 </style>
 <body>
+<input autofocus maxlength=4 placeholder="Postcode" type="text" />
 <script src="/d3.js"></script>
 <script src="/topojson.js"></script>
 <script>
@@ -51,15 +58,43 @@ d3.json("postcodes.json", function(error, postcodes) {
   window.draw = function() {
 
     d3.selectAll("path").remove()
-    svg.selectAll("path")
+    p = svg.selectAll("path")
         .data(postcodesgeo)
       .enter().append("path")
-        .attr("id", function(d) { return "postcode_" + d.id; })
-        .attr("d", path);
+        .attr("class", "feature")
+        .attr("d", path)
+        .on("click", log);
     
+    svg.append("path")
+        .datum(topojson.mesh(postcodes, postcodes.objects.postcodesgeo, function(a, b) { return a !== b; }))
+        .attr("class", "mesh")
+        .attr("d", path);
   }
   draw();
 
 });
+
+  
+var input = d3.select("input")
+    .on("cut", function() { setTimeout(change, 10); })
+    .on("paste", function() { setTimeout(change, 10); })
+    .on("change", change)
+    .on("keyup", change);
+
+function change() {
+  var postcode = input.property("value");
+  d3.selectAll(".feature").style("fill", "#ccc");
+  if(postcode != '') {
+    p.filter(function(d) { return d.id.indexOf("POA"+postcode) !== -1; }).style("fill", "red");
+    //filtered_postcodes.style("fill", "steelblue");
+    //var bounds = [];
+    //filtered_postcodes.each(function(d) { bounds.push(path.bounds(d)); });
+    //log(bounds);
+  }
+}
+
+function log() {
+  console.log(arguments);
+}
 
 </script>
