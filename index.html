@@ -8,9 +8,9 @@
 
 .mesh {
   fill: none;
-  stroke: #fff;
-  stroke-width: .5px;
-  stroke-linejoin: round;
+  //stroke: #fff;
+  //stroke-width: .5px;
+  //stroke-linejoin: round;
 }
 
 svg { 
@@ -27,9 +27,10 @@ svg {
 var width = 950,
     height = 900;
 
-var svg = d3.select("body").append("svg")
+var g = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+  .append("g");
 
 path = d3.geo.path(); // XXX make this a var
 
@@ -58,14 +59,14 @@ d3.json("postcodes.json", function(error, postcodes) {
   window.draw = function() {
 
     d3.selectAll("path").remove()
-    p = svg.selectAll("path")
+    p = g.selectAll("path")
         .data(postcodesgeo)
       .enter().append("path")
         .attr("class", "feature")
         .attr("d", path)
         .on("click", log);
     
-    svg.append("path")
+    g.append("path")
         .datum(topojson.mesh(postcodes, postcodes.objects.postcodesgeo, function(a, b) { return a !== b; }))
         .attr("class", "mesh")
         .attr("d", path);
@@ -84,17 +85,73 @@ var input = d3.select("input")
 function change() {
   var postcode = input.property("value");
   d3.selectAll(".feature").style("fill", "#ccc");
+  var bounds = [];
   if(postcode != '') {
-    p.filter(function(d) { return d.id.indexOf("POA"+postcode) !== -1; }).style("fill", "red");
+    p.filter(function(d) { 
+      var match = d.id.indexOf("POA"+postcode) !== -1
+      if(match) {
+        bounds.push(path.bounds(d));
+      }
+      return match;
+    }).style("fill", "red");
+    if(bounds.length === 0) { return; }
+
+    var bound = calculate_bounds(bounds);
+    zoom(bound);
+    
+    
     //filtered_postcodes.style("fill", "steelblue");
     //var bounds = [];
     //filtered_postcodes.each(function(d) { bounds.push(path.bounds(d)); });
-    //log(bounds);
+    log(bounds);
+  } else {
+    unzoom();
   }
 }
 
+function calculate_bounds(bounds) {
+  var top = -1000000000;
+  var right = -1000000000;
+  var bottom = 1000000000;
+  var left = 10000000000;
+
+  for (var i = 0; i < bounds.length; i++) {
+    log("bound", bounds[i]);
+    console.log(bounds[i][0][0]);
+    var lb = bounds[i][0][0];
+    var bb = bounds[i][0][1];
+    var rb = bounds[i][1][0];
+    var tb = bounds[i][1][1];
+    left = (lb < left) ? lb : left;
+    bottom = (bb < bottom) ? bb : bottom;
+    right = (rb > right) ? rb : right;
+    top = (tb > top) ? tb : top;
+
+
+    console.log(left);
+  }
+  var ret = [[left, bottom], [right, top]];
+
+  log(ret);
+  return ret;
+}
+
+function zoom(b) {
+  var max_scale = 50;
+  var scale = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
+  var used_scale = scale > max_scale ? max_scale : scale;
+  g.transition().duration(750).attr("transform",
+      "translate(" + projection.translate() + ")"
+      + "scale(" + used_scale + ")"
+      + "translate(" + -(b[1][0] + b[0][0]) / 2 + "," + -(b[1][1] + b[0][1]) / 2 + ")");
+}
+
+function unzoom() {
+  g.transition().duration(750).attr("transform", "");
+}
+
 function log() {
-  console.log(arguments);
+  console.log(arguments[0], arguments);
 }
 
 </script>
