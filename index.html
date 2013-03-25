@@ -27,10 +27,13 @@ svg {
 var width = 950,
     height = 900;
 
-var g = d3.select("body").append("svg")
+var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
-  .append("g");
+
+var g = svg.append("g");
+
+var color = d3.scale.category10()
 
 path = d3.geo.path(); // XXX make this a var
 
@@ -45,6 +48,7 @@ d3.json("postcodes.json", function(error, postcodes) {
 
   var all_aus = mainland_width + left_margin + right_margin;
   var translate_width = width / (all_aus / mainland_width);
+  var legend = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 
   projection = d3.geo.albers() // XXX make this a var
@@ -70,8 +74,37 @@ d3.json("postcodes.json", function(error, postcodes) {
         .datum(topojson.mesh(postcodes, postcodes.objects.postcodesgeo, function(a, b) { return a !== b; }))
         .attr("class", "mesh")
         .attr("d", path);
+
+  }
+
+  window.updateLegend = function(legend) {
+    console.log(legend);
+    svg.selectAll(".legend").remove();
+
+    svg.selectAll("rect.legend")
+        .data(legend)
+      .enter().append("rect")
+        .attr("class", "legend")
+        .attr("y", 10)
+        .attr("x", function(d, i) { return width - 10 * 30 + d * 30; })
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", function(d) { return color(d); });
+
+    svg.selectAll("text.legend")
+        .data(legend)
+      .enter().append("text")
+        .attr("class", "legend")
+        .attr("y", 20)
+        .attr("x", function(d, i) { return width - 10 * 30 + d * 30 + 10; })
+        .style("fill", "white")
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .text(String);
   }
   draw();
+  change();
+  updateLegend(legend);
 
 });
 
@@ -82,31 +115,50 @@ var input = d3.select("input")
     .on("change", change)
     .on("keyup", change);
 
+var prefix = "POA";
+
 function change() {
   var postcode = input.property("value");
   d3.selectAll(".feature").style("fill", "#ccc");
   var bounds = [];
-  if(postcode != '') {
+  var found = undefined;
+  if (postcode != '') {
     p.filter(function(d) { 
-      var match = d.id.indexOf("POA"+postcode) !== -1
-      if(match) {
+      var match = d.id.indexOf(prefix+postcode) !== -1
+      if (match) {
         bounds.push(path.bounds(d));
+        if (postcode.length === 4) { found = d; }
       }
       return match;
-    }).style("fill", "red");
-    if(bounds.length === 0) { return; }
-
+    });
+    if (found) {
+      p.filter(function(d) { return d.id === found.id; }).style("fill", "black");
+    }
+    if (bounds.length === 0) { return; }
     var bound = calculate_bounds(bounds);
     zoom(bound);
+
+
     
     
     //filtered_postcodes.style("fill", "steelblue");
     //var bounds = [];
     //filtered_postcodes.each(function(d) { bounds.push(path.bounds(d)); });
-    log(bounds);
+    //log(bounds);
   } else {
     unzoom();
   }
+  var legend_obj = {};
+  for (var i = 0; i < 10; i++) {
+    p.filter(function(d) {
+      var match = d.id.indexOf(prefix+postcode+i) !== -1;
+      if (match) { legend_obj[i] = i; }
+      return match;
+    }).style("fill", color(i));
+  }
+  console.log(d3.values(legend_obj).map(function(num) { return +num; }));
+  var legend = d3.values(legend_obj).map(function(num) { return +num; });
+  updateLegend(legend);
 }
 
 function calculate_bounds(bounds) {
@@ -116,8 +168,8 @@ function calculate_bounds(bounds) {
   var left = 10000000000;
 
   for (var i = 0; i < bounds.length; i++) {
-    log("bound", bounds[i]);
-    console.log(bounds[i][0][0]);
+    //log("bound", bounds[i]);
+    //console.log(bounds[i][0][0]);
     var lb = bounds[i][0][0];
     var bb = bounds[i][0][1];
     var rb = bounds[i][1][0];
@@ -128,11 +180,11 @@ function calculate_bounds(bounds) {
     top = (tb > top) ? tb : top;
 
 
-    console.log(left);
+    //console.log(left);
   }
   var ret = [[left, bottom], [right, top]];
 
-  log(ret);
+  //log(ret);
   return ret;
 }
 
