@@ -34,7 +34,7 @@ var g = d3.select("body").append("svg")
 
 path = d3.geo.path(); // XXX make this a var
 
-d3.json("postcodes4.json", function(error, postcodes) {
+d3.json("postcodes.json", function(error, postcodes) {
   console.log(postcodes);
 
   var postcodesgeo = topojson.object(postcodes, postcodes.objects.postcodesgeo).geometries;
