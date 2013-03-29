@@ -2,24 +2,33 @@
 <meta charset="utf-8">
 <style>
 
-.feature {
-  fill: #ccc;
-}
-
-.mesh {
-  fill: none;
-  //stroke: #fff;
-  //stroke-width: .5px;
-  //stroke-linejoin: round;
-}
-
 svg { 
-  border: 1px solid steelblue;
+  border: 1px solid #dedede;
+}
+
+label {
+  position: absolute;
+  text-align: center;
+  left: 400px;
+  font-weight: bold;
+}
+
+.feature {
+  stroke: none;
+}
+
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 0.02;
 }
 
 </style>
 <body>
-<input autofocus maxlength=4 placeholder="Postcode" type="text" />
+<label for="postcode">
+  Type a postcode to get started: <br />
+  <input id="postcode" autofocus maxlength=4 placeholder="Postcode" type="text" />
+</label>
 <script src="/d3.js"></script>
 <script src="/topojson.js"></script>
 <script>
@@ -31,9 +40,13 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
 
+used_scale = 1;
+
 var g = svg.append("g");
 
 var color = d3.scale.category10()
+
+var border = d3.scale.pow().exponent(0.1).domain([0, 50]).range([0.4, 0.02]);
 
 path = d3.geo.path(); // XXX make this a var
 
@@ -70,10 +83,17 @@ d3.json("postcodes.json", function(error, postcodes) {
         .attr("d", path)
         .on("click", log);
     
-    g.append("path")
+    boundary = g.append("path")
         .datum(topojson.mesh(postcodes, postcodes.objects.postcodesgeo, function(a, b) { return a !== b; }))
-        .attr("class", "mesh")
+        .attr("class", "boundary")
         .attr("d", path);
+
+    svg.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("height", 50)
+        .attr("width", width)
+        .style("fill", "white");
 
   }
 
@@ -106,20 +126,28 @@ d3.json("postcodes.json", function(error, postcodes) {
   change();
   updateLegend(legend);
 
+  input
+      .on("cut", function() { setTimeout(change, 10); })
+      .on("paste", function() { setTimeout(change, 10); })
+      .on("change", change)
+      .on("keyup", change);
 });
-
   
 var input = d3.select("input")
-    .on("cut", function() { setTimeout(change, 10); })
-    .on("paste", function() { setTimeout(change, 10); })
-    .on("change", change)
-    .on("keyup", change);
 
 var prefix = "POA";
 
+function setFoundStyle(selection, postcode) {
+  selection.style("fill", color(postcode.substring(postcode.length - 1)));
+}
+
+function setNormalStyle(selection) {
+  selection.style("fill", "#222");
+}
+
 function change() {
   var postcode = input.property("value");
-  d3.selectAll(".feature").style("fill", "#ccc");
+  d3.selectAll(".feature").call(setNormalStyle);
   var bounds = [];
   var found = undefined;
   if (postcode != '') {
@@ -132,7 +160,9 @@ function change() {
       return match;
     });
     if (found) {
-      p.filter(function(d) { return d.id === found.id; }).style("fill", "black");
+      p.filter(function(d) { return d.id === found.id; })
+        .call(setFoundStyle, postcode);
+
     }
     if (bounds.length === 0) { return; }
     var bound = calculate_bounds(bounds);
@@ -148,6 +178,8 @@ function change() {
   } else {
     unzoom();
   }
+  console.log(used_scale);
+  console.log(0.4 / (used_scale));
   var legend_obj = {};
   for (var i = 0; i < 10; i++) {
     p.filter(function(d) {
@@ -189,9 +221,10 @@ function calculate_bounds(bounds) {
 }
 
 function zoom(b) {
+  var last_scale = used_scale;
   var max_scale = 50;
   var scale = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
-  var used_scale = scale > max_scale ? max_scale : scale;
+  used_scale = scale > max_scale ? max_scale : scale;
   g.transition().duration(750).attr("transform",
       "translate(" + projection.translate() + ")"
       + "scale(" + used_scale + ")"
@@ -199,7 +232,9 @@ function zoom(b) {
 }
 
 function unzoom() {
-  g.transition().duration(750).attr("transform", "");
+  used_scale = 1;
+  g.transition().duration(750).attr("transform", "").each("end", function() {
+  });
 }
 
 function log() {
