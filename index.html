@@ -9,7 +9,7 @@ svg {
 label {
   position: absolute;
   text-align: center;
-  left: 400px;
+  left: 200px;
   font-weight: bold;
 }
 
@@ -33,8 +33,8 @@ label {
 <script src="/topojson.js"></script>
 <script>
 
-var width = 950,
-    height = 900;
+var width = 750,
+    height = 700;
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
@@ -49,6 +49,8 @@ var color = d3.scale.category10()
 var border = d3.scale.pow().exponent(0.1).domain([0, 50]).range([0.4, 0.02]);
 
 path = d3.geo.path(); // XXX make this a var
+
+var selectedPostcode = "";
 
 d3.json("postcodes.json", function(error, postcodes) {
   console.log(postcodes);
@@ -66,7 +68,7 @@ d3.json("postcodes.json", function(error, postcodes) {
 
   projection = d3.geo.albers() // XXX make this a var
     .translate([translate_width, height / 2])
-    .scale(1400)
+    .scale(1100)
     .rotate([-132.5, 0])
     .center([0, -26.5]) // Center of Australia, accounting for tasmania
     .parallels([-36, -18]);
@@ -123,8 +125,9 @@ d3.json("postcodes.json", function(error, postcodes) {
         .text(String);
   }
   draw();
-  change();
-  updateLegend(legend);
+  if (change()) {
+    updateLegend();
+  }
 
   input
       .on("cut", function() { setTimeout(change, 10); })
@@ -147,50 +150,56 @@ function setNormalStyle(selection) {
 
 function change() {
   var postcode = input.property("value");
-  d3.selectAll(".feature").call(setNormalStyle);
+  var lastPostcode = selectedPostcode;
+  selectedPostcode = postcode;
   var bounds = [];
   var found = undefined;
-  if (postcode != '') {
-    p.filter(function(d) { 
-      var match = d.id.indexOf(prefix+postcode) !== -1
-      if (match) {
-        bounds.push(path.bounds(d));
-        if (postcode.length === 4) { found = d; }
-      }
-      return match;
-    });
-    if (found) {
-      p.filter(function(d) { return d.id === found.id; })
+  if (lastPostcode == selectedPostcode) {
+    return false;
+  } else {
+    d3.selectAll(".feature").call(setNormalStyle);
+    if (postcode != '' && postcode.match(/\d{1,4}/)) {
+      console.log("Change");
+      p.filter(function(d) { 
+        var match = d.id.indexOf(prefix+postcode) !== -1
+        if (match) {
+          bounds.push(path.bounds(d));
+          if (postcode.length === 4) { found = d; }
+        }
+        return match;
+      });
+      if (found) {
+        p.filter(function(d) { return d.id === found.id; })
         .call(setFoundStyle, postcode);
 
+      }
+      if (bounds.length === 0) { return; }
+      var bound = calculate_bounds(bounds);
+      zoom(bound);
+
+
+
+
+      //filtered_postcodes.style("fill", "steelblue");
+      //var bounds = [];
+      //filtered_postcodes.each(function(d) { bounds.push(path.bounds(d)); });
+      //log(bounds);
+      } else {
+      unzoom();
     }
-    if (bounds.length === 0) { return; }
-    var bound = calculate_bounds(bounds);
-    zoom(bound);
-
-
-    
-    
-    //filtered_postcodes.style("fill", "steelblue");
-    //var bounds = [];
-    //filtered_postcodes.each(function(d) { bounds.push(path.bounds(d)); });
-    //log(bounds);
-  } else {
-    unzoom();
+    var legend_obj = {};
+    for (var i = 0; i < 10; i++) {
+      p.filter(function(d) {
+        var match = d.id.indexOf(prefix+postcode+i) !== -1;
+        if (match) { legend_obj[i] = i; }
+        return match;
+      }).style("fill", color(i));
+    }
+    console.log(d3.values(legend_obj).map(function(num) { return +num; }));
+    var legend = d3.values(legend_obj).map(function(num) { return +num; });
+    updateLegend(legend);
+    return true;
   }
-  console.log(used_scale);
-  console.log(0.4 / (used_scale));
-  var legend_obj = {};
-  for (var i = 0; i < 10; i++) {
-    p.filter(function(d) {
-      var match = d.id.indexOf(prefix+postcode+i) !== -1;
-      if (match) { legend_obj[i] = i; }
-      return match;
-    }).style("fill", color(i));
-  }
-  console.log(d3.values(legend_obj).map(function(num) { return +num; }));
-  var legend = d3.values(legend_obj).map(function(num) { return +num; });
-  updateLegend(legend);
 }
 
 function calculate_bounds(bounds) {
@@ -222,10 +231,10 @@ function calculate_bounds(bounds) {
 
 function zoom(b) {
   var last_scale = used_scale;
-  var max_scale = 50;
+  var max_scale = 100;
   var scale = .95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
   used_scale = scale > max_scale ? max_scale : scale;
-  g.transition().duration(750).attr("transform",
+  g.transition().duration(500).attr("transform",
       "translate(" + projection.translate() + ")"
       + "scale(" + used_scale + ")"
       + "translate(" + -(b[1][0] + b[0][0]) / 2 + "," + -(b[1][1] + b[0][1]) / 2 + ")");
