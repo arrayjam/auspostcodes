@@ -9,7 +9,7 @@ var svg = d3.select("body").append("svg")
 
 var g = svg.append("g");
 
-//var color = d3.scale.category10();
+var color = d3.scale.category10();
 
 d3.json("postcodes.json", function(error, postcodes) {
   var postcodesgeo = topojson.object(postcodes, postcodes.objects.postcodesgeo).geometries;
@@ -32,8 +32,8 @@ d3.json("postcodes.json", function(error, postcodes) {
     .projection(projection);
 
   var input = d3.select("input")
-      .on("cut", function() { setTimeout(change, 10); })
-      .on("paste", function() { setTimeout(change, 10); })
+      .on("cut", change)
+      .on("paste", change)
       .on("change", change)
       .on("keyup", change);
 
@@ -55,34 +55,34 @@ d3.json("postcodes.json", function(error, postcodes) {
   change();
 
 
-//  function updateLegend(legend) {
-//    svg.selectAll(".legend").remove();
-//
-//    svg.selectAll("rect.legend")
-//        .data(legend)
-//      .enter().append("rect")
-//        .attr("class", "legend")
-//        .attr("y", 10)
-//        .attr("x", function(d) { return width - 10 * 30 + d * 30; })
-//        .attr("width", 20)
-//        .attr("height", 20)
-//        .style("fill", function(d) { return color(d); });
-//
-//    svg.selectAll("text.legend")
-//        .data(legend)
-//      .enter().append("text")
-//        .attr("class", "legend")
-//        .attr("y", 20)
-//        .attr("x", function(d) { return width - 10 * 30 + d * 30 + 10; })
-//        .style("fill", "white")
-//        .attr("dy", ".35em")
-//        .attr("text-anchor", "middle")
-//        .text(String);
-//  }
+  function updateLegend(legend) {
+    svg.selectAll(".legend").remove();
 
-//  function setFoundStyle(selection, postcode) {
-//    selection.style("fill", color(postcode.substring(postcode.length - 1)));
-//  }
+    svg.selectAll("rect.legend")
+        .data(legend)
+      .enter().append("rect")
+        .attr("class", "legend")
+        .attr("y", 10)
+        .attr("x", function(d) { return width - 10 * 30 + d * 30; })
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", function(d) { return color(d); });
+
+    svg.selectAll("text.legend")
+        .data(legend)
+      .enter().append("text")
+        .attr("class", "legend")
+        .attr("y", 20)
+        .attr("x", function(d) { return width - 10 * 30 + d * 30 + 10; })
+        .style("fill", "white")
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .text(String);
+  }
+
+  function setFoundStyle(selection, postcode) {
+    selection.style("fill", color(postcode.slice(-1)));
+  }
 
   function setNormalStyle(selection) {
     selection.style("fill", "#222");
@@ -104,28 +104,47 @@ d3.json("postcodes.json", function(error, postcodes) {
 
   var selectedPostcode;
   function change() {
-    var postcode = input.property("value");
     var lastPostcode = selectedPostcode;
-    selectedPostcode = postcode;
+    selectedPostcode = input.property("value");
+    console.log("selectedPostcode", selectedPostcode);
     if (lastPostcode === selectedPostcode) {
       return;
-    } else {
-      feature.call(setNormalStyle);
-      if (postcode !== "" && postcode.match(/\d{1,4}/)) {
-        var matching = feature.filter(function(d) { return d.id.indexOf(prefix+postcode) !== -1; });
-        console.log(matching);
-        var bounds = d3.map(matching, function(d) { return path.bounds(d); });
-        console.log(bounds);
-        g.call(zoom, calculateBounds(bounds), 100);
-      } else {
-        g.call(unzoom);
-      }
-      //var legendObj = {};
-      //for (var i = 0; i < 10; i++) {
-      //  feature.filter(findMatching).style("fill", color(i));
-      //}
-      //var legend = d3.values(legendObj).map(function(num) { return +num; });
-      //updateLegend(legend);
+    }
+
+    var shouldUnzoom = selectedPostcode === "";
+    var shouldZoom = selectedPostcode.match(/\d{1,4}/);
+
+    if (!shouldUnzoom && !shouldZoom) {
+      return;
+    }
+
+    feature.call(setNormalStyle);
+
+    var matching = feature.filter(function(d) { return d.id.indexOf(prefix+selectedPostcode) !== -1; });
+    var bounds = [];
+    if (shouldZoom) {
+      matching.each(function(d) { bounds.push(path.bounds(d)); });
+    }
+    var nextDigitPosition = prefix.length + selectedPostcode.length;
+    var nextLegend = {};
+    matching.style("fill", function(d) {
+      var nextDigit = +d.id.charAt(nextDigitPosition);
+      nextLegend[nextDigit] = true;
+      return color(nextDigit);
+    });
+
+    if (matching[0].length === 1) {
+      matching.call(setFoundStyle, selectedPostcode);
+    }
+
+    updateLegend(d3.keys(nextLegend));
+
+    if (shouldUnzoom) {
+      console.log("unzooming");
+      g.call(unzoom);
+    }
+    if (shouldZoom) {
+      g.call(zoom, calculateBounds(bounds), 100);
     }
   }
 
