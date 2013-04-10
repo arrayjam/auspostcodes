@@ -92,8 +92,7 @@ d3.json("postcodes.json", function(error, postcodes) {
     selection.transition().duration(750).attr("transform", "");
   }
 
-  function zoom(selection, bounds, maxScale) {
-    var b = bounds;
+  function zoom(selection, b, maxScale) {
     var scale = 0.95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height);
     var usedScale = Math.min(scale, maxScale);
     selection.transition().duration(750).attr("transform",
@@ -104,9 +103,10 @@ d3.json("postcodes.json", function(error, postcodes) {
 
   var selectedPostcode;
   function change() {
+    //console.log(postcodes);
     var lastPostcode = selectedPostcode;
     selectedPostcode = input.property("value");
-    console.log("selectedPostcode", selectedPostcode);
+    //console.log("selectedPostcode", selectedPostcode);
     if (lastPostcode === selectedPostcode) {
       return;
     }
@@ -118,55 +118,62 @@ d3.json("postcodes.json", function(error, postcodes) {
       return;
     }
 
-    feature.call(setNormalStyle);
-
-    var matching = feature.filter(function(d) { return d.id.indexOf(prefix+selectedPostcode) !== -1; });
-    var bounds = [];
-    if (shouldZoom) {
-      matching.each(function(d) { bounds.push(path.bounds(d)); });
-    }
-    var nextDigitPosition = prefix.length + selectedPostcode.length;
-    var nextLegend = {};
-    matching.style("fill", function(d) {
-      var nextDigit = +d.id.charAt(nextDigitPosition);
-      nextLegend[nextDigit] = true;
-      return color(nextDigit);
+    var matchString = prefix + selectedPostcode;
+    var findBounds = findMinMaxBounds();
+    console.log(feature);
+    var bounds;
+    feature.each(function(d) {
+      var match = matchingFeature(d, matchString);
+      this.style.fill = match ? color(nextDigit(d, matchString)) : "#222";
+      if (match) { bounds = findBounds(path.bounds(d)); }
     });
 
-    if (matching[0].length === 1) {
-      matching.call(setFoundStyle, selectedPostcode);
-    }
+    if (shouldZoom) { g.call(zoom, bounds, 100); }
+    if (shouldUnzoom) { g.call(unzoom); }
+  }
 
-    updateLegend(d3.keys(nextLegend));
+  function nextDigit(feature, string) {
+    return feature.id.charAt(string.length);
+  }
 
-    if (shouldUnzoom) {
-      console.log("unzooming");
-      g.call(unzoom);
-    }
-    if (shouldZoom) {
-      g.call(zoom, calculateBounds(bounds), 100);
-    }
+  function matchingFeature(feature, string) {
+    return feature.id.indexOf(string) !== -1;
   }
 
 
-  function calculateBounds(bounds) {
-    var top = -Infinity;
-    var right = -Infinity;
-    var bottom = Infinity;
-    var left = Infinity;
+//    var nextDigitPosition = prefix.length + selectedPostcode.length;
+//    var nextLegend = {};
+//    feature.transition(2000).style("fill", function(d) {
+//      if (d.id.indexOf(prefix+selectedPostcode) !== -1) {
+//        var nextDigit = +d.id.charAt(nextDigitPosition);
+//        nextLegend[nextDigit] = true;
+//        return color(nextDigit);
+//      } else {
+//        return "#222";
+//      }
+//    });
 
-    bounds.forEach(function(bound) {
-      var lb = bound[0][0];
-      var bb = bound[0][1];
-      var rb = bound[1][0];
-      var tb = bound[1][1];
-      left = Math.min(lb, left);
-      bottom = Math.min(bb, bottom);
-      right = Math.max(rb, right);
-      top = Math.max(tb, top);
-    });
 
-    return [[left, bottom], [right, top]];
-  }
+  //  if (shouldUnzoom) {
+  //    console.log("unzooming");
+  //    g.call(unzoom);
+  //  }
+  //  if (shouldZoom) {
+  //    g.call(zoom, calculateBounds(bounds), 100);
+  //  }
+
+    function findMinMaxBounds() {
+      var topBound    = -Infinity;
+      var rightBound  = -Infinity;
+      var bottomBound =  Infinity;
+      var leftBound   =  Infinity;
+      return function (bound) {
+        leftBound = Math.min(bound[0][0], leftBound);
+        bottomBound = Math.min(bound[0][1], bottomBound);
+        rightBound = Math.max(bound[1][0], rightBound);
+        topBound = Math.max(bound[1][1], topBound);
+        return [[leftBound, bottomBound], [rightBound, topBound]];
+      };
+    }
 });
 
