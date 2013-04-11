@@ -5,9 +5,11 @@ var width = 750,
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height + 50);
 
-var g = svg.append("g");
+var g = svg.append("g")
+  .attr("transform", "translate(0, 50)")
+    .append("g");
 
 var color = d3.scale.category10();
 
