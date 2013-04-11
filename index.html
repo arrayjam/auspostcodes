@@ -9,8 +9,15 @@ svg {
 label {
   position: absolute;
   text-align: center;
-  left: 200px;
   font-weight: bold;
+  padding: 0 10px;
+  line-height: 50px;
+}
+
+input {
+  text-align: center;
+  width: 5em;
+  padding: 5px;
 }
 
 .feature {
@@ -29,10 +36,15 @@ label {
   stroke-width: 0.02;
 }
 
+.divider {
+  stroke: #dedede;
+  stroke-width: 1.5px;
+}
+
 </style>
 <body>
 <label for="postcode">
-  Type a postcode to get started: <br />
+  Enter a Postcode:
   <input id="postcode" autofocus maxlength=4 placeholder="Postcode" type="text" />
 </label>
 <script src="/d3.js"></script>

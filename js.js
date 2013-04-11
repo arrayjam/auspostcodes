@@ -52,40 +52,63 @@ d3.json("postcodes.json", function(error, postcodes) {
       .attr("width", width)
       .style("fill", "white");
 
+  svg.append("line")
+      .attr("class", "divider")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", 51)
+      .attr("y2", 51);
+
+  var legends = svg.append("g").attr("class", "legends");
+
+  svg.selectAll("text.legend")
+      .data([0,1,2,3,4,5,6,7,8,9])
+    .enter().append("text")
+      .attr("class", "legend")
+      .attr("y", 25)
+      .attr("x", function(d) { return width - (10 - d) * 50 + 25; })
+      .style("fill", "white")
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .style("font-size", 20)
+      .style("z-index", 100)
+      .text(String);
+
   change();
 
 
   function updateLegend(legend) {
-    svg.selectAll(".legend").remove();
+    console.log(legend);
+    var container = legends.selectAll("rect.legend")
+        .data(legend, function(d) { return d; });
 
-    svg.selectAll("rect.legend")
-        .data(legend)
-      .enter().append("rect")
-        .attr("class", "legend")
-        .attr("y", 10)
-        .attr("x", function(d) { return width - 10 * 30 + d * 30; })
-        .attr("width", 20)
-        .attr("height", 20)
-        .style("fill", function(d) { return color(d); });
+    container
+      .transition().duration(750)
+        .attr("x", function(d) { return width - (10 - d) * 50; })
+        .style("fill", function(d) { console.log(color(d)); return color(d); })
+        .attr("y", 0);
 
-    svg.selectAll("text.legend")
-        .data(legend)
-      .enter().append("text")
+    container.enter().append("rect")
         .attr("class", "legend")
-        .attr("y", 20)
-        .attr("x", function(d) { return width - 10 * 30 + d * 30 + 10; })
-        .style("fill", "white")
-        .attr("dy", ".35em")
-        .attr("text-anchor", "middle")
-        .text(String);
+        .attr("y", -50)
+        .attr("width", 50)
+        .attr("height", 50)
+        .attr("x", function(d) { return width - (10 - d) * 50; })
+      .transition()
+        .duration(750)
+        .ease("bounce")
+        .style("fill", function(d) { console.log(color(d)); return color(d); })
+        .attr("y", 0);
+
+    container.exit().transition().duration(400)
+        .ease("backs")
+        .attr("y", -50)
+        .remove();
+
   }
 
   function setFoundStyle(selection, postcode) {
     selection.style("fill", color(postcode.slice(-1)));
-  }
-
-  function setNormalStyle(selection) {
-    selection.style("fill", "#222");
   }
 
   function unzoom(selection) {
@@ -122,14 +145,28 @@ d3.json("postcodes.json", function(error, postcodes) {
     var findBounds = findMinMaxBounds();
     console.log(feature);
     var bounds;
-    feature.each(function(d) {
+    var legendObj = {};
+    var matching = feature.filter(function(d) {
       var match = matchingFeature(d, matchString);
-      this.style.fill = match ? color(nextDigit(d, matchString)) : "#222";
-      if (match) { bounds = findBounds(path.bounds(d)); }
+      var next = nextDigit(d, matchString);
+      this.style.fill = match ? color(+next) : "#222";
+      if (match) {
+        if (next) { legendObj[+next] = true; }
+        bounds = findBounds(path.bounds(d));
+      }
+      return match;
     });
 
-    if (shouldZoom) { g.call(zoom, bounds, 100); }
-    if (shouldUnzoom) { g.call(unzoom); }
+    updateLegend(d3.keys(legendObj).map(function(d) { return +d; }));
+    if (matching[0].length === 0) { return; }
+    if (selectedPostcode.length === 4 && matching[0].length === 1) { matching.call(setFoundStyle, matchString); }
+    console.log(legendObj);
+    var zoomers = function() {
+      if (shouldZoom) { g.call(zoom, bounds, 100); }
+      if (shouldUnzoom) { g.call(unzoom); }
+    };
+    setTimeout(zoomers, 0);
+
   }
 
   function nextDigit(feature, string) {
