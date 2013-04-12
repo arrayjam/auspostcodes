@@ -6,8 +6,17 @@ svg {
   border: 1px solid #dedede;
 }
 
-text, label {
+.center {
+  margin: 0 auto;
+  width: 750px;
+}
+
+text, label, h1, .attribution {
   font-family: sans-serif;
+}
+
+.attribution {
+  font-size: 10px;
 }
 
 label {
@@ -35,10 +44,15 @@ input {
 
 </style>
 <body>
-<label for="postcode">
-  Enter a Postcode:
-  <input id="postcode" autofocus maxlength=4 placeholder="Postcode" type="text" />
-</label>
+<div class="center">
+  <h1>Australian Postcode Decoder</h1>
+  <label for="postcode">
+    Enter a Postcode:
+    <input id="postcode" autofocus maxlength=4 placeholder="Postcode" type="text" />
+  </label>
+  <svg></svg>
+  <div class="attribution">Based on <a href="http://www.abs.gov.au/">Australian Bureau of Statistics</a> data.</div>
+</div>
 <script src="/d3.js"></script>
 <script src="/topojson.js"></script>
 <script src="/js.js"></script>

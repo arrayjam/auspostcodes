@@ -3,7 +3,7 @@
 var width = 750,
     height = 700;
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("svg")
     .attr("width", width)
     .attr("height", height + 50);
 
