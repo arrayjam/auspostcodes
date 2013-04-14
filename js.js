@@ -23,7 +23,8 @@ var loading = svg.append("text")
 
 d3.json("postcodes.json", function(error, geo) {
   var postcodesGeo = topojson.object(geo, geo.objects.postcodesgeo).geometries;
-  var bordersGeo = topojson.mesh(geo, geo.objects.states, function (a, b) { return a === b; });
+  var seaBordersGeo = topojson.mesh(geo, geo.objects.states, function (a, b) { return a === b; });
+  var stateBordersGeo = topojson.mesh(geo, geo.objects.states, function (a, b) { return a !== b; });
 
   var mainlandWidth = 236;
   var leftMargin = 186;
@@ -49,14 +50,19 @@ d3.json("postcodes.json", function(error, geo) {
       .on("keyup", change);
 
   g.append("path")
-    .datum(bordersGeo)
-      .attr("class", "border")
+    .datum(seaBordersGeo)
+      .attr("class", "sea-border")
       .attr("d", path);
 
   var feature = g.selectAll("path.feature")
       .data(postcodesGeo)
     .enter().append("path")
       .attr("class", "feature")
+      .attr("d", path);
+
+  g.append("path")
+    .datum(stateBordersGeo)
+      .attr("class", "state-border")
       .attr("d", path);
 
   loading.remove();
