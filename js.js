@@ -60,7 +60,8 @@ d3.json("postcodes.json", function(error, geo) {
       .attr("class", "feature")
       .attr("d", path)
       .on("mouseover", tipover)
-      .on("mouseout", tipout);
+      .on("mouseout", tipout)
+      .on("click", boom);
 
   g.append("path")
     .datum(stateBordersGeo)
@@ -89,6 +90,10 @@ d3.json("postcodes.json", function(error, geo) {
   var selectedPostcode;
 
   change();
+
+  function boom() {
+    this.remove();
+  }
 
   function tipover(feature) {
     var names = feature.properties.names.split(",");
