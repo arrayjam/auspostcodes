@@ -93,6 +93,7 @@ d3.json("postcodes.json", function(error, geo) {
 
   function boom() {
     this.remove();
+    d3.select("h1").text("BOOM GOES THE DYNAMITE");
   }
 
   function tipover(feature) {
