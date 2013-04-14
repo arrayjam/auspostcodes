@@ -58,7 +58,10 @@ d3.json("postcodes.json", function(error, geo) {
       .data(postcodesGeo)
     .enter().append("path")
       .attr("class", "feature")
-      .attr("d", path);
+      .attr("d", path)
+      .on("mouseover", tipover)
+      .on("mousemove", tipmove)
+      .on("mouseout", tipout);
 
   g.append("path")
     .datum(stateBordersGeo)
@@ -95,10 +98,39 @@ d3.json("postcodes.json", function(error, geo) {
       .style("font-size", 20)
       .text(String);
 
-  var prefix = "POA";
+  var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden");
+
   var selectedPostcode;
 
   change();
+
+  function tipover(feature) {
+    var names = feature.properties.names.split(",");
+    tooltip.text(names);
+    tooltip.style("visibility", "visible");
+  }
+
+  function tipmove() {
+    console.log(d3.event);
+    var x = d3.event.x,
+        y = d3.event.y;
+
+    tooltip
+      .style("top" , y-10 + "px")
+      .style("left", x+10 + "px");
+     //tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(event.pageX+10)+"px");}
+    console.log(tooltip);
+
+
+  }
+
+  function tipout() {
+    tooltip.style("visibility", "hidden");
+  }
 
   function updateLegend(legend) {
     var container = legends.selectAll("rect.legend")
@@ -160,13 +192,12 @@ d3.json("postcodes.json", function(error, geo) {
       return;
     }
 
-    var matchString = prefix + selectedPostcode;
     var findBounds = findMinMaxBounds();
     var bounds;
     var legendObj = {};
     var matching = feature.filter(function(d) {
-      var match = matchingFeature(d, matchString);
-      var next = nextDigit(d, matchString);
+      var match = matchingFeature(d, selectedPostcode);
+      var next = nextDigit(d, selectedPostcode);
       this.style.fill = match ? color(+next) : "#222";
       if (match) {
         if (next) { legendObj[+next] = true; }
@@ -177,7 +208,7 @@ d3.json("postcodes.json", function(error, geo) {
 
     updateLegend(d3.keys(legendObj).map(function(d) { return +d; }));
     if (matching[0].length === 0) { return; }
-    if (selectedPostcode.length === 4 && matching[0].length === 1) { matching.call(setFoundStyle, matchString); }
+    if (selectedPostcode.length === 4 && matching[0].length === 1) { matching.call(setFoundStyle, selectedPostcode); }
 
     var zoomers = function() {
       if (shouldZoom) { g.call(zoom, bounds, 100); }
@@ -192,7 +223,7 @@ d3.json("postcodes.json", function(error, geo) {
   }
 
   function matchingFeature(feature, string) {
-    return feature.id.indexOf(string) !== -1;
+    return feature.id.indexOf(string) === 0;
   }
 
   function findMinMaxBounds() {
