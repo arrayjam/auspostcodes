@@ -10,15 +10,11 @@
   ga('send', 'pageview');
 
 </script>
+<link rel="stylesheet" href="bootstrap.min.css">
 <style>
 
 svg { 
   border: 1px solid #dedede;
-}
-
-.center {
-  margin: 0 auto;
-  width: 750px;
 }
 
 text, label, h1, .attribution {
@@ -30,7 +26,6 @@ text, label, h1, .attribution {
 }
 
 label {
-  position: absolute;
   text-align: center;
   font-weight: bold;
   padding: 0 10px;
@@ -66,14 +61,21 @@ input {
 
 </style>
 <body>
-<div class="center">
+<div class="container">
   <h1>Australian Postcode Decoder</h1>
-  <label for="postcode">
-    Enter a Postcode:
-    <input id="postcode" autofocus maxlength=4 placeholder="Postcode" type="text" />
-  </label>
-  <svg></svg>
-  <div class="attribution">Yuri Feldman <a href="http://twitter.com/arrayjam">@arrayjam</a>. Made with d3.js and topojson. Based on <a href="http://www.abs.gov.au/">Australian Bureau of Statistics</a> data.</div>
+  <div class="row">
+    <div class="span10">
+      <label for="postcode">
+        Enter a Postcode:
+        <input id="postcode" autofocus maxlength=4 placeholder="Postcode" type="text" />
+      </label>
+      <svg></svg>
+      <div class="attribution">Yuri Feldman <a href="http://twitter.com/arrayjam">@arrayjam</a>. Made with d3.js and topojson. Based on <a href="http://www.abs.gov.au/">Australian Bureau of Statistics</a> data.</div>
+    </div>
+    <div class="span2">
+      <div class="names"><ul class="inline"></ul></div>
+    </div>
+  </div>
 </div>
 <script src="/d3.js"></script>
 <script src="/topojson.js"></script>

@@ -1,6 +1,6 @@
 /*globals d3:false,topojson:false*/
 
-var width = 750,
+var width = 700,
     height = 700;
 
 var svg = d3.select("svg")
@@ -60,7 +60,6 @@ d3.json("postcodes.json", function(error, geo) {
       .attr("class", "feature")
       .attr("d", path)
       .on("mouseover", tipover)
-      .on("mousemove", tipmove)
       .on("mouseout", tipout);
 
   g.append("path")
@@ -73,7 +72,7 @@ d3.json("postcodes.json", function(error, geo) {
   svg.append("rect")
       .attr("x", 0)
       .attr("y", 0)
-      .attr("height", 50)
+      .attr("height", 70)
       .attr("width", width)
       .style("fill", "white");
 
@@ -81,84 +80,71 @@ d3.json("postcodes.json", function(error, geo) {
       .attr("class", "divider")
       .attr("x1", 0)
       .attr("x2", width)
-      .attr("y1", 51)
-      .attr("y2", 51);
+      .attr("y1", 71)
+      .attr("y2", 71);
 
   var legends = svg.append("g").attr("class", "legends");
 
-  svg.selectAll("text.legend")
-      .data([0,1,2,3,4,5,6,7,8,9])
-    .enter().append("text")
-      .attr("class", "legend")
-      .attr("y", 25)
-      .attr("x", function(d) { return width - (10 - d) * 50 + 25; })
-      .style("fill", "white")
-      .attr("dy", ".35em")
-      .attr("text-anchor", "middle")
-      .style("font-size", 20)
-      .text(String);
-
-  var tooltip = d3.select("body").append("div")
-    .attr("class", "tooltip")
-    .style("position", "absolute")
-    .style("z-index", "10")
-    .style("visibility", "hidden");
-
+  var namesContainer = d3.select(".names ul");
   var selectedPostcode;
 
   change();
 
   function tipover(feature) {
     var names = feature.properties.names.split(",");
-    tooltip.text(names);
-    tooltip.style("visibility", "visible");
-  }
+    console.log(names);
+    var boundNames = namesContainer.selectAll("li")
+        .data(names, function(d) { return d; });
 
-  function tipmove() {
-    console.log(d3.event);
-    var x = d3.event.x,
-        y = d3.event.y;
+    boundNames.enter().append("li")
+        .text(String);
 
-    tooltip
-      .style("top" , y-10 + "px")
-      .style("left", x+10 + "px");
-     //tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(event.pageX+10)+"px");}
-    console.log(tooltip);
-
-
+    boundNames.exit().remove();
   }
 
   function tipout() {
-    tooltip.style("visibility", "hidden");
+    //namesContainer.selectAll("li").remove();
   }
 
   function updateLegend(legend) {
-    var container = legends.selectAll("rect.legend")
+    var rectContainer = legends.selectAll("rect.legend")
         .data(legend, function(d) { return d; });
 
-    container
-      .transition().duration(750)
-        .attr("x", function(d) { return width - (10 - d) * 50; })
-        .style("fill", function(d) { return color(d); })
-        .attr("y", 0);
-
-    container.enter().append("rect")
+    rectContainer.enter().append("rect")
         .attr("class", "legend")
-        .attr("y", -50)
-        .attr("width", 50)
-        .attr("height", 50)
-        .attr("x", function(d) { return width - (10 - d) * 50; })
-      .transition()
-        .duration(750)
-        .ease("bounce")
+        .attr("y", -70)
+        .attr("width", 70)
+        .attr("height", 70)
+        .attr("x", function(d) { return width - (10 - d) * 70; })
         .style("fill", function(d) { return color(d); })
+      .transition().duration(750).ease("bounce")
         .attr("y", 0);
 
-    container.exit().transition().duration(400)
+    rectContainer.exit().transition().duration(400)
         .ease("backs")
-        .attr("y", -50)
+        .attr("y", -70)
         .remove();
 
+    var textContainer = legends.selectAll("text.legend")
+        .data(legend, function(d) { return d; });
+
+    textContainer.enter().append("text")
+        .attr("class", "legend")
+        .attr("y", -35)
+        .attr("x", function(d) { return width - (10 - d) * 70 + 35; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .style("fill", "white")
+        .style("font-size", 25)
+        .text(String)
+      .transition().duration(750).ease("bounce")
+        .attr("y", 35);
+
+    textContainer.exit()
+      .transition().duration(400)
+        .ease("backs")
+        .attr("y", -35)
+        .remove();
   }
 
   function setFoundStyle(selection, postcode) {
@@ -185,6 +171,8 @@ d3.json("postcodes.json", function(error, geo) {
       return;
     }
 
+    d3.select(".winner").remove();
+
     var shouldUnzoom = selectedPostcode === "";
     var shouldZoom = selectedPostcode.match(/\d{1,4}/);
 
@@ -208,7 +196,10 @@ d3.json("postcodes.json", function(error, geo) {
 
     updateLegend(d3.keys(legendObj).map(function(d) { return +d; }));
     if (matching[0].length === 0) { return; }
-    if (selectedPostcode.length === 4 && matching[0].length === 1) { matching.call(setFoundStyle, selectedPostcode); }
+    if (selectedPostcode.length === 4 && matching[0].length === 1) {
+      matching.call(setFoundStyle, selectedPostcode);
+      matchingDisplay(selectedPostcode);
+    }
 
     var zoomers = function() {
       if (shouldZoom) { g.call(zoom, bounds, 100); }
@@ -224,6 +215,38 @@ d3.json("postcodes.json", function(error, geo) {
 
   function matchingFeature(feature, string) {
     return feature.id.indexOf(string) === 0;
+  }
+
+  function matchingDisplay(postcode) {
+    var winner = svg.append("g")
+        .attr("class", "winner");
+
+    winner.append("rect")
+        .style("fill", "#222")
+        .attr("width", width)
+        .attr("height", 70);
+
+    winner.selectAll("rect.winners")
+        .data(postcode.split(""))
+      .enter().append("rect")
+        .attr("class", "winners")
+        .attr("width", 70)
+        .attr("height", 70)
+        .attr("y", 0)
+        .attr("x", function(d, i) { return width - (4 - i) * 70 - width / 2 + 70 * 2; })
+        .style("fill", function(d) { return color(d); });
+
+    winner.selectAll("text.winners")
+        .data(postcode.split(""))
+      .enter().append("text")
+        .attr("class", "winners")
+        .attr("dy", ".35em")
+        .attr("text-anchor", "middle")
+        .style("fill", "white")
+        .style("font-size", 25)
+        .attr("y", 35)
+        .attr("x", function(d, i) { return width - (4 - i) * 70 - width / 2 + 70 * 2 + 35; })
+        .text(String);
   }
 
   function findMinMaxBounds() {
