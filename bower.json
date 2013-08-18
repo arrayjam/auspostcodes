@@ -1,0 +1,15 @@
+{
+  "name": "australian-postal-areas-decoder",
+  "version": "2.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "git://github.com/mbostock/d3.git#~3.2.8",
+    "topojson": "git://github.com/mbostock/topojson.git#~1.3.0"
+  }
+}
