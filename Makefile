@@ -6,7 +6,7 @@ clean:
 	rm -rf shp/*
 
 zip/POA_2011_AUST.zip:
-	wget -O $@ --continue --progress=bar "http://www.abs.gov.au/AUSSTATS/subscriber.nsf/log?openagent&1270055003_poa_2011_aust_shape.zip&1270.0.55.003&Data%20Cubes&71B4572D909B934ECA2578D40012FE0D&0&July%202011&22.07.2011&Previous"
+	curl 'http://www.censusdata.abs.gov.au/CensusOutput/copsubdatapacks.nsf/All%20docs%20by%20catNo/Boundaries_2011_POA/$$File/2011_POA_shape.zip' > $@
 
 shp/POA_2011_AUST.shp: zip/POA_2011_AUST.zip
 	unzip -d shp/ $^
