@@ -3,6 +3,25 @@
 var width = 700,
     height = 700;
 
+var ausCenter = [132.5, -26.5];
+var parallels = [-36, -18];
+
+var visibleArea, invisibleArea;
+
+var simplify = d3.geo.transform({
+  point: function(x, y, z) {
+    if (z < visibleArea) return;
+    x = x * scale + translate[0];
+    y = y * scale + translate[1];
+    if (x >= 0 && x <= width && y >= 0 && y <= height || z >= invisibleArea)
+      this.stream.point(x, y);
+  }
+});
+
+var zoom = d3.behaviour.zoom()
+    .size([width, height])
+    .on("zoom", zoomed);
+
 var svg = d3.select("svg")
     .attr("width", width)
     .attr("height", height + 50);
@@ -36,12 +55,29 @@ d3.json("postcodes.json", function(error, geo) {
   var projection = d3.geo.albers()
     .translate([translateWidth, height / 2])
     .scale(1100)
-    .rotate([-132.5, 0])
-    .center([0, -26.5]) // Center of Australia, accounting for tasmania
-    .parallels([-36, -18]);
+    .rotate([-ausCenter[0], 0])
+    .center([0, ausCenter[1]])
+    .parallels(parallels)
+    .precision(0);
 
   var path = d3.geo.path()
-    .projection(projection);
+    .projection(simplify);
+
+  function zoomTo(location, scale) {
+    var point = projection(location);
+    return zoom
+        .translate([width / 2 - point[0] * scale, height / 2 - point[1] * scale])
+        .scale(scale);
+  }
+
+  function zoomed(d) {
+    translate = zoom.translate();
+    scale = zoom.scale();
+    visibleArea = 1 / scale / scale;
+    invisibleArea = 200 * visibleArea;
+    feature.attr("d", path);
+  }
+
 
   var input = d3.select("input")
       .on("cut", change)
