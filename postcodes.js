@@ -58,9 +58,7 @@ d3.json("postcodes.json", function(error, geo) {
       .data(postcodesGeo)
     .enter().append("path")
       .attr("class", "feature")
-      .attr("d", path)
-      .on("mouseover", tipover)
-      .on("mouseout", tipout);
+      .attr("d", path);
 
   g.append("path")
     .datum(stateBordersGeo)
@@ -85,26 +83,9 @@ d3.json("postcodes.json", function(error, geo) {
 
   var legends = svg.append("g").attr("class", "legends");
 
-  var namesContainer = d3.select(".names ul");
   var selectedPostcode;
 
   change();
-
-  function tipover(feature) {
-    var names = feature.properties.names.split(",");
-    console.log(names);
-    var boundNames = namesContainer.selectAll("li")
-        .data(names, function(d) { return d; });
-
-    boundNames.enter().append("li")
-        .text(String);
-
-    boundNames.exit().remove();
-  }
-
-  function tipout() {
-    //namesContainer.selectAll("li").remove();
-  }
 
   function updateLegend(legend) {
     var rectContainer = legends.selectAll("rect.legend")
