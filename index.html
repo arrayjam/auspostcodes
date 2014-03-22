@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style></style>
+<style>
+  .outline {
+    fill: none;
+    stroke: #bbb;
+    stroke-width: 0.5;
+  }
+</style>
 <body>
   <div class="container"></div>
 <script id="input" type="text/ractive">
@@ -8,7 +14,14 @@
 </script>
 
 <script id="decoder" type="text/ractive">
-  <postcode on-changed-postcode="decode" />
+  {{^loaded}}
+    Loading&hellip;
+  {{/loaded}}
+
+  {{#loaded}}
+    <postcode on-changed-postcode="decode" />
+    <svg />
+  {{/loaded}}
 </script>
 <script src="vendor/d3/d3.js"></script>
 <script src="vendor/topojson/topojson.js"></script>
