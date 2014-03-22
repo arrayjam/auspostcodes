@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style></style>
+<body>
+  <div class="container"></div>
+<script id="input" type="text/ractive">
+  <input placeholder="Type a postcode" value="{{selectedPostcode}}" />
+</script>
+
+<script id="decoder" type="text/ractive">
+  <postcode on-changed-postcode="decode" />
+</script>
+<script src="vendor/d3/d3.js"></script>
+<script src="vendor/topojson/topojson.js"></script>
+<script src="vendor/ractive/Ractive.js"></script>
+<script src="postcodes.js"></script>
+
