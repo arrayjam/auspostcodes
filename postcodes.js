@@ -63,24 +63,24 @@ App.Decoder  = Ractive.extend({
       var path = d3.geo.path()
           .projection(projection);
 
-      //g.append("path")
-          //.attr("class", "outline")
-          //.datum(australiaGeo)
-          //.attr("d", path);
+      g.append("path")
+          .attr("class", "outline")
+          .datum(australiaGeo)
+          .attr("d", path);
 
       self.precalculatePrefixBounds(postcodesGeo);
 
-      // [[Left bottom] [right top]]
-      g.selectAll("rect")
-          .data(d3.values(self.get("bounds")).map(function(d) { return d.map(projection); }))
-        .enter().append("rect")
-          .attr("x", function(d) { return d[0][0]; })
-          .attr("y", function(d) { return d[1][1]; })
-          .attr("width", function(d) { return d[1][0] - d[0][0]; })
-          .attr("height", function(d) { return d[0][1] - d[1][1]; })
+      var selected = {type: "GeometryCollection", geometries: geo.objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf("6") === 0; })},
+          selectionBoundary = topojson.mesh(geo, selected, function(a, b) { return a === b; });
+
+      g.append("path")
+          .datum(selectionBoundary)
+          .attr("d", path)
           .style("fill", "none")
-          .style("stroke", "red")
-          .style("stroke-width", 0.5);
+          .style("stroke", "steelblue");
+
+      // [[Left bottom] [right top]]
+      //.data(d3.values(self.get("bounds")).map(function(d) { return d.map(projection); }))
     });
   },
 
