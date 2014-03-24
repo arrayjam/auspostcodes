@@ -16,7 +16,7 @@ sources/STE_2011_AUST.shp: zip/2011_STE_shape.zip
 	touch $@
 
 data/combined.topo.json: data/ sources/POA_2011_AUST.shp sources/SSC_2011_AUST.shp sources/STE_2011_AUST.shp
-	topojson -p postcode=POA_CODE,suburb=SSC_NAME -o $@ -- \
+	topojson --simplify-proportion 0.2 -p postcode=POA_CODE,suburb=SSC_NAME -o $@ -- \
 		postcodes=sources/POA_2011_AUST.shp \
 		suburbs=sources/SSC_2011_AUST.shp \
 		australia=sources/STE_2011_AUST.shp

@@ -27,6 +27,10 @@ App.Decoder  = Ractive.extend({
     var self = this;
 
     self.on("decode", function(postcode) {
+      d3.selectAll(".postcode")
+        .style("fill", "none")
+      .filter(function(d) { return d.properties.postcode.indexOf(postcode.toString()) === 0; })
+        .style("fill", "red");
       console.log("decode", postcode);
     });
 
@@ -72,6 +76,15 @@ App.Decoder  = Ractive.extend({
 
       var selected = {type: "GeometryCollection", geometries: geo.objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf("6") === 0; })},
           selectionBoundary = topojson.mesh(geo, selected, function(a, b) { return a === b; });
+
+      g.selectAll("path.postcode")
+          .data(postcodesGeo)
+        .enter().append("path")
+          .attr("class", "postcode")
+          .attr("d", path)
+          .style("fill", "none")
+          .style("stroke", "#222")
+          .style("stroke-width", 0.5);
 
       g.append("path")
           .datum(selectionBoundary)
