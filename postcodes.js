@@ -27,9 +27,6 @@ App.Decoder  = Ractive.extend({
     var self = this;
 
     self.on("decode", function(postcode) {
-      var selected = {type: "GeometryCollection", geometries: self.get("geo").objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf(postcode.toString()) === 0; })},
-          selectionBoundary = topojson.mesh(self.get("geo"), selected, function(a, b) { return a === b; });
-
       var width = 1500,
           height = 700;
 
@@ -45,14 +42,22 @@ App.Decoder  = Ractive.extend({
 
       d3.selectAll(".select-outline").remove();
 
-      d3.select("svg g").append("path")
-          .datum(selectionBoundary)
-          .attr("d", path)
-          .attr("class", "select-outline")
-          .style("fill", "none")
-          .style("stroke", "steelblue")
-          .style("stroke-width", 3);
+      var color = d3.scale.category10();
 
+      d3.range(10).map(function(prefix) {
+        var selected = {type: "GeometryCollection", geometries: self.get("geo").objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf(postcode.toString() + prefix.toString()) === 0; })},
+            selectionBoundary = topojson.mesh(self.get("geo"), selected, function(a, b) { return a === b; });
+
+        d3.select("svg g").append("path")
+            .datum(selectionBoundary)
+            .attr("d", path)
+            .attr("class", "select-outline")
+            .style("fill", "none")
+            .style("stroke", function(d) {
+              return color(prefix);
+            })
+            .style("stroke-width", 3);
+      });
     });
 
     self.setup();
@@ -96,23 +101,14 @@ App.Decoder  = Ractive.extend({
 
       self.precalculatePrefixBounds(postcodesGeo);
 
-      var selected = {type: "GeometryCollection", geometries: geo.objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf("6") === 0; })},
-          selectionBoundary = topojson.mesh(geo, selected, function(a, b) { return a === b; });
-
       g.selectAll("path.postcode")
-          .data(postcodesGeo)
+          .data(suburbsGeo)
         .enter().append("path")
           .attr("class", "postcode")
           .attr("d", path)
           .style("fill", "none")
           .style("stroke", "#222")
           .style("stroke-width", 0.5);
-
-      g.append("path")
-          .datum(selectionBoundary)
-          .attr("d", path)
-          .style("fill", "none")
-          .style("stroke", "steelblue");
 
       // [[Left bottom] [right top]]
       //.data(d3.values(self.get("bounds")).map(function(d) { return d.map(projection); }))
