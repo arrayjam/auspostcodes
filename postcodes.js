@@ -27,11 +27,32 @@ App.Decoder  = Ractive.extend({
     var self = this;
 
     self.on("decode", function(postcode) {
-      d3.selectAll(".postcode")
-        .style("fill", "none")
-      .filter(function(d) { return d.properties.postcode.indexOf(postcode.toString()) === 0; })
-        .style("fill", "red");
-      console.log("decode", postcode);
+      var selected = {type: "GeometryCollection", geometries: self.get("geo").objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf(postcode.toString()) === 0; })},
+          selectionBoundary = topojson.mesh(self.get("geo"), selected, function(a, b) { return a === b; });
+
+      var width = 1500,
+          height = 700;
+
+      var projection = d3.geo.albers()
+          .translate([width / 2, height / 2])
+          .rotate([-132.5, 0])
+          .center([0, -26.5])
+          .parallels([-36, -18])
+          .scale(1100);
+
+      var path = d3.geo.path()
+          .projection(projection);
+
+      d3.selectAll(".select-outline").remove();
+
+      d3.select("svg g").append("path")
+          .datum(selectionBoundary)
+          .attr("d", path)
+          .attr("class", "select-outline")
+          .style("fill", "none")
+          .style("stroke", "steelblue")
+          .style("stroke-width", 3);
+
     });
 
     self.setup();
@@ -40,6 +61,7 @@ App.Decoder  = Ractive.extend({
   setup: function() {
     var self = this;
     d3.json("data/combined.topo.json", function(geo) {
+      self.set("geo", geo);
       self.set("loaded", true);
       var suburbsGeo = topojson.feature(geo, geo.objects.suburbs).features,
           postcodesGeo = topojson.feature(geo, geo.objects.postcodes).features,
