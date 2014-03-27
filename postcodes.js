@@ -12,6 +12,7 @@ App.Input = Ractive.extend({
 });
 
 App.Decoder  = Ractive.extend({
+  debug: true,
   el: '.container',
   template: "#decoder",
 
@@ -27,8 +28,9 @@ App.Decoder  = Ractive.extend({
     var self = this;
 
     self.on("decode", function(postcode) {
-      var width = 1500,
-          height = 700;
+      var width = 800,
+          height = 700,
+          g = d3.select("svg").select("g");
 
       var projection = d3.geo.albers()
           .translate([width / 2, height / 2])
@@ -44,20 +46,61 @@ App.Decoder  = Ractive.extend({
 
       var color = d3.scale.category10();
 
-      d3.range(10).map(function(prefix) {
-        var selected = {type: "GeometryCollection", geometries: self.get("geo").objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf(postcode.toString() + prefix.toString()) === 0; })},
-            selectionBoundary = topojson.mesh(self.get("geo"), selected, function(a, b) { return a === b; });
+      //d3.range(10).map(function(prefix) {
+        //var selected = {type: "GeometryCollection", geometries: self.get("geo").objects.postcodes.geometries.filter(function(d) { return d.properties.postcode.indexOf(postcode.toString() + prefix.toString()) === 0; })},
+            //selectionBoundary = topojson.mesh(self.get("geo"), selected, function(a, b) { return a === b; });
 
-        d3.select("svg g").append("path")
-            .datum(selectionBoundary)
-            .attr("d", path)
-            .attr("class", "select-outline")
-            .style("fill", "none")
-            .style("stroke", function(d) {
-              return color(prefix);
-            })
-            .style("stroke-width", 3);
-      });
+        //g.append("path")
+            //.datum(selectionBoundary)
+            //.attr("d", path)
+            //.attr("class", "select-outline")
+            //.style("fill", "none")
+            //.style("stroke", function(d) {
+              //return color(prefix);
+            //})
+            //.style("stroke-width", 3);
+      //});
+
+
+
+      console.log(postcode, self.get("bounds")[postcode]);
+      var bounds = self.get("bounds")[postcode].map(projection),
+      //var bounds = self.get("bounds")[postcode],
+          dx = bounds[1][0] - bounds[0][0],
+          dy = bounds[1][1] - bounds[0][1],
+          x = (bounds[0][0] + bounds[1][0]) / 2,
+          y = (bounds[0][1] + bounds[1][1]) / 2,
+          scale = .9 / Math.max(dx / width, dy / height),
+          translate = [width / 2 - scale * x, height / 2 - scale * y];
+
+      var zoom = d3.behavior.zoom()
+          .translate([0, 0])
+          .scale(1)
+          .scaleExtent([1, 8])
+          .on("zoom", zoomed);
+
+      var frame = 0;
+      var setScale = 0;
+      var postcodes = g.selectAll(".postcode")[0];
+      g.transition()
+          .duration(2000)
+          .call(zoom.translate(translate).scale(scale).event)
+          .tween("lines", function() {
+            return function() {
+              frame++;
+              if (frame % 20 === 0) {
+                postcodes.forEach(function(d) {
+                  d.style.strokeWidth = 1.5 / setScale + "px";
+                });
+              }
+            };
+          });
+
+      function zoomed() {
+        setScale = d3.event.scale;
+        g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+      }
+
     });
 
     self.setup();
@@ -76,7 +119,7 @@ App.Decoder  = Ractive.extend({
         d.properties.postcode = d.properties.postcode.substr(3, 4);
       });
 
-      var width = 1500,
+      var width = 800,
           height = 700;
 
       var g = d3.select("svg")
