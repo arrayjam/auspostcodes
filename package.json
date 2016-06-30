@@ -13,12 +13,18 @@
     "url": "https://github.com/arrayjam/auspostcodes.git"
   },
   "dependencies": {
-    "mapbox-gl": "^0.20.0"
+    "mapbox-gl": "^0.20.0",
+    "topojson": "^1.6.26"
   },
   "scripts": {
     "build": "rollup -c"
   },
   "devDependencies": {
-    "eslint": "^2.13.0"
+    "eslint": "^2.13.0",
+    "invariant": "^2.2.1",
+    "rollup": "^0.33.0",
+    "rollup-plugin-commonjs": "^3.1.0",
+    "rollup-plugin-node-resolve": "^1.7.1",
+    "turf-extent": "^1.0.4"
   }
 }
