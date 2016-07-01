@@ -1,7 +1,5 @@
 # TODO
 
-- Load bounds file
-- Construct filter for computed bounds
 - Envelope for bounds
 - Use map.fitBounds for bounds
 - Create mapbox filter

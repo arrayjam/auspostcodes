@@ -13,6 +13,7 @@
     "url": "https://github.com/arrayjam/auspostcodes.git"
   },
   "dependencies": {
+    "d3": "^4.0.0",
     "mapbox-gl": "^0.20.0",
     "topojson": "^1.6.26"
   },

@@ -16,16 +16,24 @@ invariant(
   "Expected a FeatureCollection."
 );
 
-var bounds = {};
+var bounds = [];
 geojson.features.forEach(function(feature) {
-  var id = feature.properties.postcode;
+  var props = feature.properties;
   var geometry = feature.geometry;
 
   if (geometry) {
     var e = extent(feature);
-    // NOTE(yuri): Convert from WSEN to [[W, N], [E, S]]
-    var converted = [[ e[0], e[3] ], [ e[2], e[1] ]];
-    bounds[id] = converted;
+    var result = {
+      // NOTE(yuri): Convert from WSEN to [[W, N], [E, S]]
+      bounds: [[ e[0], e[3] ], [ e[2], e[1] ]],
+      postcode:    props.postcode,
+      digit_one:   props.digit_one,
+      digit_two:   props.digit_two,
+      digit_three: props.digit_three,
+      digit_four:  props.digit_four,
+    };
+
+    bounds.push(result);
   }
 });
 
