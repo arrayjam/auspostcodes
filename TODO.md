@@ -1,7 +1,5 @@
 # TODO
 
-- Envelope for bounds
-- Use map.fitBounds for bounds
 - Create mapbox filter
 - Create new layer for mapbox postcodes
 - Pull in d3 colourschemes
