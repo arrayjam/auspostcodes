@@ -1,0 +1,382 @@
+{
+    "version": 8,
+    "name": "Postcodes",
+    "metadata": {
+        "mapbox:groups": {
+            "1465558908863.1238": {
+                "name": "Roads"
+            }
+        }
+    },
+    "center": [
+        133.92412059082136,
+        -28.328268975139466
+    ],
+    "zoom": 4.137313682202676,
+    "bearing": 0,
+    "pitch": 0,
+    "sources": {
+        "mapbox://arrayjam.88b94e49": {
+            "url": "mapbox://arrayjam.88b94e49",
+            "type": "vector"
+        },
+        "mapbox://mapbox.mapbox-streets-v7": {
+            "url": "mapbox://mapbox.mapbox-streets-v7",
+            "type": "vector"
+        },
+        "mapbox://arrayjam.931ee05e": {
+            "url": "mapbox://arrayjam.931ee05e",
+            "type": "vector"
+        }
+    },
+    "sprite": "mapbox://sprites/arrayjam/cinjxlkne002zb7mbxe807imk",
+    "glyphs": "mapbox://fonts/arrayjam/{fontstack}/{range}.pbf",
+    "layers": [
+        {
+            "id": "background",
+            "type": "background",
+            "interactive": true,
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "background-color": "#444"
+            }
+        },
+        {
+            "id": "admin",
+            "type": "line",
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "admin",
+            "interactive": true,
+            "filter": [
+                "in",
+                "$type",
+                "LineString",
+                "Point",
+                "Polygon"
+            ],
+            "layout": {
+                "visibility": "none"
+            },
+            "paint": {
+                "line-color": "hsl(0, 0%, 41%)"
+            }
+        },
+        {
+            "id": "All digits",
+            "type": "fill",
+            "source": "mapbox://arrayjam.88b94e49",
+            "source-layer": "POA_2011_AUST_DIGITS",
+            "interactive": true,
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "fill-color": "#222",
+                "fill-outline-color": "hsla(0, 100%, 50%, 0)"
+            }
+        },
+        {
+            "id": "water",
+            "type": "fill",
+            "metadata": {},
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "water",
+            "interactive": true,
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "fill-color": "hsl(0, 0%, 27%)"
+            }
+        },
+        {
+            "id": "Trunk",
+            "type": "line",
+            "metadata": {
+                "mapbox:group": "1465558908863.1238"
+            },
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "road",
+            "interactive": true,
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "class",
+                    "trunk"
+                ],
+                [
+                    "in",
+                    "$type",
+                    "LineString",
+                    "Point",
+                    "Polygon"
+                ]
+            ],
+            "layout": {
+                "visibility": "visible",
+                "line-cap": "butt",
+                "line-join": "miter"
+            },
+            "paint": {
+                "line-color": "hsl(0, 0%, 30%)",
+                "line-width": 3,
+                "line-opacity": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            12,
+                            0
+                        ],
+                        [
+                            13,
+                            1
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "Primary",
+            "type": "line",
+            "metadata": {
+                "mapbox:group": "1465558908863.1238"
+            },
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "road",
+            "interactive": true,
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "class",
+                    "primary"
+                ],
+                [
+                    "in",
+                    "$type",
+                    "LineString",
+                    "Point",
+                    "Polygon"
+                ]
+            ],
+            "layout": {
+                "visibility": "visible",
+                "line-cap": "butt",
+                "line-join": "miter"
+            },
+            "paint": {
+                "line-color": "hsl(0, 0%, 30%)",
+                "line-width": 2,
+                "line-opacity": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            12,
+                            0
+                        ],
+                        [
+                            13,
+                            1
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "Primary copy",
+            "type": "line",
+            "metadata": {
+                "mapbox:group": "1465558908863.1238"
+            },
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "road",
+            "interactive": true,
+            "filter": [
+                "in",
+                "$type",
+                "LineString",
+                "Point",
+                "Polygon"
+            ],
+            "layout": {
+                "visibility": "visible",
+                "line-cap": "butt",
+                "line-join": "miter"
+            },
+            "paint": {
+                "line-color": "hsl(0, 0%, 30%)",
+                "line-width": 2,
+                "line-opacity": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            12,
+                            0
+                        ],
+                        [
+                            13,
+                            1
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "Street",
+            "type": "line",
+            "metadata": {
+                "mapbox:group": "1465558908863.1238"
+            },
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "road",
+            "interactive": true,
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "class",
+                    "street"
+                ],
+                [
+                    "in",
+                    "$type",
+                    "LineString",
+                    "Point",
+                    "Polygon"
+                ]
+            ],
+            "layout": {
+                "visibility": "visible",
+                "line-cap": "butt",
+                "line-join": "miter"
+            },
+            "paint": {
+                "line-color": "hsl(0, 0%, 30%)",
+                "line-opacity": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            12,
+                            0
+                        ],
+                        [
+                            13,
+                            1
+                        ]
+                    ]
+                },
+                "line-width": 1
+            }
+        },
+        {
+            "id": "place-label",
+            "type": "symbol",
+            "source": "mapbox://mapbox.mapbox-streets-v7",
+            "source-layer": "place_label",
+            "interactive": true,
+            "layout": {
+                "text-size": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            11,
+                            10
+                        ],
+                        [
+                            22,
+                            50
+                        ]
+                    ]
+                },
+                "text-allow-overlap": false,
+                "text-ignore-placement": false,
+                "text-transform": "none",
+                "text-font": [
+                    "Clan Offc Pro Narrow Medium"
+                ],
+                "symbol-placement": "point",
+                "text-justify": "center",
+                "text-padding": 5,
+                "visibility": "visible",
+                "text-anchor": "center",
+                "text-field": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            0,
+                            ""
+                        ],
+                        [
+                            11,
+                            "{name}"
+                        ]
+                    ]
+                }
+            },
+            "paint": {
+                "text-color": "hsl(0, 0%, 100%)",
+                "text-opacity": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            11,
+                            0
+                        ],
+                        [
+                            12,
+                            1
+                        ]
+                    ]
+                },
+                "text-halo-color": "hsl(0, 0%, 0%)",
+                "text-halo-width": 1,
+                "text-halo-blur": 0
+            }
+        },
+        {
+            "id": "ssc-2011-aust copy",
+            "type": "fill",
+            "source": "mapbox://arrayjam.931ee05e",
+            "source-layer": "SSC_2011_AUST",
+            "interactive": true,
+            "filter": [
+                "==",
+                "$type",
+                "Polygon"
+            ],
+            "layout": {
+                "visibility": "visible"
+            },
+            "paint": {
+                "fill-outline-color": {
+                    "base": 1,
+                    "stops": [
+                        [
+                            0,
+                            "hsla(0, 0%, 100%, 0)"
+                        ],
+                        [
+                            4,
+                            "hsla(0, 0%, 100%, 0.03)"
+                        ],
+                        [
+                            22,
+                            "hsl(0, 0%, 100%)"
+                        ]
+                    ]
+                },
+                "fill-opacity": 1,
+                "fill-color": "hsla(0, 0%, 13%, 0)",
+                "fill-antialias": true
+            }
+        }
+    ],
+    "created": "2016-04-28T06:50:38.754Z",
+    "id": "cinjxlkne002zb7mbxe807imk",
+    "modified": "2016-07-18T18:01:13.828Z",
+    "owner": "arrayjam",
+    "draft": false
+}
