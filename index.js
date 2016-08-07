@@ -1,8 +1,10 @@
 import mapboxgl from "mapbox-gl";
-import { feature } from "topojson";
-import { json } from "d3-request";
-import { schemeCategory10 as colors } from "d3-scale";
-import { range } from "d3-array";
+// import { feature } from "topojson";
+// import { json } from "d3-request";
+// import { schemeCategory10 as colors } from "d3-scale";
+// import { range } from "d3-array";
+// import { select } from "d3-selection";
+import * as d3 from "d3";
 
 var digitProperties = ["digit_one", "digit_two", "digit_three", "digit_four"];
 var testPostcodes = [
@@ -13,40 +15,60 @@ var testPostcodes = [
   [3   , 1   , 9   , 6]   , // 4
 ];
 
-json("bounds.json", function(error, bounds) {
+d3.json("bounds.json", function(error, bounds) {
   var map = initMap();
   window.map = map;
 
-
-  // var boundInfo =
-
-  // var bound = getBounds(bounds, postcode);
-
   map.style.on("load", function() {
-    var postcodeIndex = 0;
+    var postcodeIndex = 2;
     var addedLayers = false;
-    var interval = setInterval(function() {
-      // if (addedLayers) clearMapLayers(map);
-      if (postcodeIndex === testPostcodes.length - 1) {
-        clearInterval(interval);
+    d3.select(".postcode").on("input", function() {
+      if (addedLayers) clearMapLayers(map);
+      var value = d3.select(this).property("value").split("");
+      var postcode = [ null, null, null, null ];
+      for (var valueIndex = 0; valueIndex < value.length && valueIndex < 4; valueIndex++) {
+        postcode[valueIndex] = +value[valueIndex];
       }
 
-      var postcode = testPostcodes[postcodeIndex];
+      console.log(postcode);
+
+      // debugger
       var layers = buildLayers(buildFilters(postcode));
+      // debugger
       setMapLayers(map, layers);
-      addedLayers = true;
-      postcodeIndex++;
+      var bound = getBounds(bounds, postcode);
+      console.log(layers);
+      if (bound.infos.length) {
+        map.fitBounds(bound.bounds);
+        addedLayers = true;
+      }
 
 
-    }, 2000);
+    });
+    // var interval = setInterval(function() {
+    //   if (addedLayers) clearMapLayers(map);
+    //   if (postcodeIndex === testPostcodes.length - 1) {
+    //     clearInterval(interval);
+    //   }
+
+    //   var postcode = testPostcodes[postcodeIndex];
+    //   var layers = buildLayers(buildFilters(postcode));
+    //   setMapLayers(map, layers);
+    //   var bound = getBounds(bounds, postcode);
+    //   map.fitBounds(bound.bounds);
+    //   addedLayers = true;
+    //   postcodeIndex++;
+    // }, 5000);
+
   });
-  // moveMap(map, bound, filter);
-  // makeMap(testBounds.map(function(b) { return getBounds(bounds, b); }));
 });
 
 function clearMapLayers(map) {
-  range(10).map(function(id) {
-    map.removeLayer(id.toString());
+  d3.range(10).map(function(id) {
+    try {
+      map.removeLayer(id.toString());
+    } catch (e) {
+    }
   });
 }
 
@@ -64,7 +86,7 @@ function buildLayers(filters) {
       "source-layer": "POA_2011_AUST_DIGITS",
       "type": "fill",
       "paint": {
-        "fill-color": colors[filterIndex],
+        "fill-color": d3.schemeCategory10[filterIndex],
         "fill-opacity": 0.6,
       },
       "filter": filter,
@@ -77,7 +99,7 @@ function buildFilters(postcode) {
 
   // Build filter for existing digits
   var digitIndex;
-  for (digitIndex = 0; postcode[digitIndex]; digitIndex++) {
+  for (digitIndex = 0; digitIndex < postcode.join("").length; digitIndex++) {
     var digitKey = digitProperties[digitIndex];
     var digit = postcode[digitIndex];
     baseFilter.push([ "==", digitKey, digit ]);
@@ -86,9 +108,8 @@ function buildFilters(postcode) {
   if (digitIndex === postcode.length) {
     return [ baseFilter ];
   } else {
-    console.log(digitIndex);
     // Return 10 filters with existing filter + each digit
-    return range(10).map(function(digit) {
+    return d3.range(10).map(function(digit) {
       var digitFilter = baseFilter.slice();
       var digitKey = digitProperties[digitIndex];
       if (digitKey) {
@@ -133,9 +154,9 @@ function makeEnvelope(bounds) {
   var height = bounds[1][1] - bounds[0][1];
   var side = Math.max(width, height);
 
-  var envelopeRatio = 0.2;
+  var envelopeRatio = 0.3;
 
-  var envelope = Math.max(side * envelopeRatio, 0.02);
+  var envelope = Math.max(side * envelopeRatio, 0.1);
 
   return [
     [ bounds[0][0] - envelope, bounds[0][1] - envelope ],
@@ -170,38 +191,3 @@ function initMap() {
   return map;
 }
 
-//   var filter = [ "==", "digit_four", 3 ];
-
-//   var newLayer = {
-//     "id": "newLayer",
-//     "source": "mapbox://arrayjam.88b94e49",
-//     "source-layer": "POA_2011_AUST_DIGITS",
-//     "type": "fill",
-//     "paint": {
-//       "fill-color": "#ff0000",
-//     },
-//     "filter": filter,
-//   };
-
-//   window.newLayer = newLayer;
-//   window.map = map;
-//   window.filter = filter;
-
-//   map.style.on("load", function() {
-//     map.addLayer(newLayer);
-
-//     var boundIndex = 0;
-//     var interval = setInterval(function() {
-//       if (boundIndex >= bounds.length) {
-//         clearInterval(interval);
-//         return;
-//       }
-
-//       map.fitBounds(bounds[boundIndex++]);
-//     }, 3000);
-//     // map.style.on("tile.load", function() {
-//     // var query = map.querySourceFeatures("mapbox://arrayjam.88b94e49", { sourceLayer: "POA_2011_AUST_DIGITS", filter: filter });
-//     // console.log(map, newLayer, query);
-//     // });
-//   });
-// }
