@@ -82,7 +82,7 @@ declare namespace GeoJSON {
     /***
     * http://geojson.org/geojson-spec.html#geometry-collection
     */
-    export interface GeometryCollection extends GeoJsonObject
+    export interface GeometryCollection
     {
         type: 'GeometryCollection'
         geometries: GeometryObject[];
@@ -91,7 +91,7 @@ declare namespace GeoJSON {
     /***
     * http://geojson.org/geojson-spec.html#feature-objects
     */
-    export interface Feature<T extends GeometryObject> extends GeoJsonObject
+    export interface Feature<T extends GeometryObject | GeometryCollection> extends GeoJsonObject
     {
         type: 'Feature'
         geometry: T;
@@ -102,7 +102,7 @@ declare namespace GeoJSON {
     /***
     * http://geojson.org/geojson-spec.html#feature-collection-objects
     */
-    export interface FeatureCollection<T extends GeometryObject> extends GeoJsonObject
+    export interface FeatureCollection<T extends GeometryObject | GeometryCollection> extends GeoJsonObject
     {
         type: 'FeatureCollection'
         features: Feature<T>[];

@@ -277,3 +277,21 @@ turf.difference(polygonFeature, polygonFeature2);
 
 turf.distance(pointFeature, pointFeature2);
 turf.distance(pointFeature, pointFeature2, "yards");
+
+turf.envelope(pointFeatureCollection);
+
+turf.explode(pointFeature);
+turf.explode(pointFeatureCollection);
+
+var multiPt = turf.multiPoint([[0,0],[10,10]]);
+var multiPoly = turf.multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
+
+let pt: GeoJSON.Point = {
+    "type": "Point",
+      "coordinates": [100, 0]
+    };
+let line: GeoJSON.LineString = {
+    "type": "LineString",
+    "coordinates": [ [101, 0], [102, 1] ]
+  };
+let collection = turf.geometryCollection([pt, line]);

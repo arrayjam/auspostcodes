@@ -108,76 +108,164 @@ declare module turf {
      * the Haversine formula to account for global curvature.
      */
     export function distance(origin: GeoJSON.Feature<GeoJSON.Point>, destination: GeoJSON.Feature<GeoJSON.Point>, unit?: Unit): number;
-}
+
+    /**
+     * Takes any number of features and returns a rectangular polygon that
+     * encompasses all vertices.
+     */
+    export function envelope(input: GeoJSON.FeatureCollection<any>): GeoJSON.Feature<GeoJSON.Polygon>;
+
+    /**
+     * Takes a feature or featurecollection and returns all positions as points.
+     */
+    export function explode(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>): GeoJSON.FeatureCollection<GeoJSON.Point>;
+
+    /**
+     * Takes input features and flips all of their coordinates from `[x, y]` to `[x, y]`
+     */
+    export function flip(input: GeoJSON.Feature<any>): GeoJSON.Feature<any>;
+    export function flip(input: GeoJSON.FeatureCollection<any>): GeoJSON.FeatureCollection<any>;
+
+
+    /**
+     * Wraps a GeoJSON Geometry in a GeoJSON Feature.
+     */
+    export function feature(geometry: GeoJSON.GeometryObject, properties?: any): GeoJSON.FeatureCollection<any>;
+
+    /**
+     * Takes coordinates, properties and returns a new Point feature.
+     */
+    export function point(coordinates: GeoJSON.Position, properties?: any): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes an array of LinearRings, properties and returns a Polygon
+     * feature.
+     */
+    export function polygon(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.Polygon>;
+
+    /**
+     * Takes a coordinate array, properties and returns a LineString.
+     */
+    export function lineString(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.LineString>;
+
+    /**
+     * Takes one or more Features and creates a FeatureCollection.
+     */
+    export function featureCollection(features: Array<GeoJSON.Feature<any>>): GeoJSON.FeatureCollection<any>;
+
+    /**
+     * Takes a coordinate array, properties and returns a MultiLineString
+     * Feature.
+     */
+    export function multiLineString(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.MultiLineString>;
+
+    /**
+     * Takes a coordinate array, properties and returns a MultiPoint Feature.
+     */
+    export function multiPoint(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.MultiPoint>;
+
+    /**
+     * Takes a coordinate array, properties and returns a MultiPolygon Feature.
+     */
+    export function multiPolygon(coordinates: GeoJSON.Position[][][], properties?: any): GeoJSON.Feature<GeoJSON.MultiPolygon>;
+
+    /**
+     * Takes a coordinate array, properties and returns a GeometryCollection Feature.
+     */
+    export function geometryCollection(coordinates: Array<GeoJSON.GeometryObject>, properties?: any): GeoJSON.Feature<GeoJSON.GeometryCollection>;
+
+
+
+ }
 
 declare module "turf" {
     export = turf;
 }
 
-declare module "turf-along" {
+declare module "@turf/turf" {
+    export = turf;
+}
+
+declare module "@turf/along" {
     export default turf.along;
 }
 
-declare module "turf-area" {
+declare module "@turf/area" {
     export default turf.area;
 }
 
-declare module "turf-bbox" {
+declare module "@turf/bbox" {
     export default turf.bbox;
 }
 
-declare module "turf-bbox-polygon" {
+declare module "@turf/bbox-polygon" {
     export default turf.bboxPolygon;
 }
 
-declare module "turf-bearing" {
+declare module "@turf/bearing" {
     export default turf.bearing;
 }
 
-declare module "turf-bezier" {
+declare module "@turf/bezier" {
     export default turf.bezier;
 }
 
-declare module "turf-buffer" {
+declare module "@turf/buffer" {
     export default turf.buffer;
 }
 
-declare module "turf-center" {
+declare module "@turf/center" {
     export default turf.center;
 }
 
-declare module "turf-center-of-mass" {
+declare module "@turf/center-of-mass" {
     export default turf.centerOfMass;
 }
 
-declare module "turf-centroid" {
+declare module "@turf/centroid" {
     export default turf.centroid;
 }
 
-declare module "turf-circle" {
+declare module "@turf/circle" {
     export default turf.circle;
 }
 
-declare module "turf-collect" {
+declare module "@turf/collect" {
     export default turf.collect;
 }
 
-declare module "turf-combine" {
+declare module "@turf/combine" {
     export default turf.combine;
 }
 
-declare module "turf-concave" {
+declare module "@turf/concave" {
     export default turf.concave;
 }
 
-declare module "turf-convex" {
+declare module "@turf/convex" {
     export default turf.convex;
 }
 
-declare module "turf-difference" {
+declare module "@turf/difference" {
     export default turf.difference;
 }
 
-declare module "turf-distance" {
+declare module "@turf/distance" {
     export default turf.distance;
+}
+
+declare module "@turf/envelope" {
+    export default turf.envelope;
+}
+
+declare module "@turf/explode" {
+    export default turf.explode;
+}
+
+declare module "@turf/flip" {
+    export default turf.flip;
+}
+
+declare module "@turf/helpers" {
+    export default turf.flip;
 }
