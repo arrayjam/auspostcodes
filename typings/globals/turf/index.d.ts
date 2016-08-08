@@ -102,6 +102,12 @@ declare module turf {
      * from the first.
      */
     export function difference(input: GeoJSON.Feature<GeoJSON.Polygon>, clip: GeoJSON.Feature<GeoJSON.Polygon>): GeoJSON.Feature<GeoJSON.Polygon>;
+
+    /**
+     * Calculates the distance between two points in the specified units. Uses
+     * the Haversine formula to account for global curvature.
+     */
+    export function distance(origin: GeoJSON.Feature<GeoJSON.Point>, destination: GeoJSON.Feature<GeoJSON.Point>, unit?: Unit): number;
 }
 
 declare module "turf" {
@@ -170,4 +176,8 @@ declare module "turf-convex" {
 
 declare module "turf-difference" {
     export default turf.difference;
+}
+
+declare module "turf-distance" {
+    export default turf.distance;
 }

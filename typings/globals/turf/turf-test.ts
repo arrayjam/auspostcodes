@@ -274,3 +274,6 @@ turf.convex(pointFeature);
 turf.convex(pointFeatureCollection);
 
 turf.difference(polygonFeature, polygonFeature2);
+
+turf.distance(pointFeature, pointFeature2);
+turf.distance(pointFeature, pointFeature2, "yards");
