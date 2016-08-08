@@ -267,3 +267,10 @@ turf.collect(polygonFeatureCollection, pointFeatureCollection, "inProp", "outPro
 turf.combine(pointFeatureCollection);
 turf.combine(lineFeatureCollection);
 turf.combine(polygonFeatureCollection);
+
+turf.concave(pointFeatureCollection, 3, "yards");
+
+turf.convex(pointFeature);
+turf.convex(pointFeatureCollection);
+
+turf.difference(polygonFeature, polygonFeature2);
