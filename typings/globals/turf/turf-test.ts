@@ -16,7 +16,7 @@ let pointFeature2: GeoJSON.Feature<GeoJSON.Point> = {
   "geometry": {
     "type": "Point",
     "coordinates": [-75.534, 39.123],
-    },
+  },
 };
 
 let lineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
@@ -33,6 +33,27 @@ let lineFeature: GeoJSON.Feature<GeoJSON.LineString> = {
       [-77.019824, 38.892368],
     ],
   },
+};
+
+let lineFeatureCollection: GeoJSON.FeatureCollection<GeoJSON.LineString> = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-77.031669, 38.878605],
+          [-77.029609, 38.881946],
+          [-77.020339, 38.884084],
+          [-77.025661, 38.885821],
+          [-77.021884, 38.889563],
+          [-77.019824, 38.892368],
+        ],
+      },
+    },
+  ],
 };
 
 let polygonFeatureCollection: GeoJSON.FeatureCollection<GeoJSON.Polygon> = {
@@ -74,11 +95,11 @@ let polygonFeature: GeoJSON.Feature<GeoJSON.Polygon> = {
   "geometry": {
     "type": "Polygon",
     "coordinates": [[
-      [105.818939,21.004714],
-      [105.818939,21.061754],
-      [105.890007,21.061754],
-      [105.890007,21.004714],
-      [105.818939,21.004714],
+      [105.818939, 21.004714],
+      [105.818939, 21.061754],
+      [105.890007, 21.061754],
+      [105.890007, 21.004714],
+      [105.818939, 21.004714],
     ]],
   },
 };
@@ -101,7 +122,7 @@ let polygonFeature2: GeoJSON.Feature<GeoJSON.Polygon> = {
       [-122.520217, 45.535693],
     ]],
   },
-}
+};
 
 let pointFeatureCollection: GeoJSON.FeatureCollection<GeoJSON.Point> = {
   "type": "FeatureCollection",
@@ -218,8 +239,6 @@ turf.along(lineFeature, 10, "kilometers");
 turf.area(lineFeature);
 turf.area(polygonFeature);
 
-turf.collect(polygonFeatureCollection, pointFeatureCollection, "inProp", "outProp");
-
 turf.bbox(polygonFeature);
 let bbox = turf.bbox(polygonFeatureCollection);
 
@@ -235,3 +254,16 @@ turf.buffer(pointFeature, 10, "meters");
 turf.buffer(pointFeatureCollection, 10, "metres");
 
 turf.center(pointFeatureCollection);
+
+turf.centerOfMass(pointFeatureCollection);
+
+turf.centroid(pointFeatureCollection);
+
+turf.circle(pointFeature, 10, 10);
+turf.circle(pointFeature, 10, 10, "kilometers");
+
+turf.collect(polygonFeatureCollection, pointFeatureCollection, "inProp", "outProp");
+
+turf.combine(pointFeatureCollection);
+turf.combine(lineFeatureCollection);
+turf.combine(polygonFeatureCollection);

@@ -9,7 +9,7 @@ declare module turf {
     type BoundingBox = [number, number, number, number];
 
     /**
-     * Takes a LineString and returns a Point at a specified distance along the line.
+     * Takes a linestring and returns a Point at a specified distance along the line.
      */
     export function along(line: GeoJSON.Feature<GeoJSON.LineString>, distance: number, unit?: Unit): GeoJSON.Feature<GeoJSON.Point>;
 
@@ -19,21 +19,12 @@ declare module turf {
     export function area(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>): number;
 
     /**
-     * Joins attributes FeatureCollection of polygons with a FeatureCollection of
-     * points. Given an `inProperty` on points and an `outProperty` for polygons,
-     * this finds every point that lies within each polygon, collects the `inProperty`
-     * values from those points, and adds them as an array to `outProperty` on the
-     * polygon.
-     */
-    export function collect(polygons: GeoJSON.FeatureCollection<GeoJSON.Polygon>, points: GeoJSON.FeatureCollection<GeoJSON.Point>, inProperty: string, outProperty: string): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
-
-    /**
      * Takes a set of features, calculates the bbox of all input features, and returns a bounding box.
      */
     export function bbox(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>): BoundingBox;
 
     /**
-     * Takes a bbox and returns an equivalent {@link Polygon|polygon}.
+     * Takes a bbox and returns an equivalent polygon.
      */
     export function bboxPolygon(bbox: BoundingBox): GeoJSON.Feature<GeoJSON.Polygon>
 
@@ -56,6 +47,41 @@ declare module turf {
      * Takes a featurecollection and returns the absolute center point of all features.
      */
     export function center(input: GeoJSON.FeatureCollection<any>): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes a feature or a featurecollection and returns its center of mass using
+     * the Centroid of Polygon formula.
+     */
+    export function centerOfMass(input: GeoJSON.FeatureCollection<any> | GeoJSON.Feature<any>): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes one or more features and calculates the centroid using the mean of all vertices.
+     * This lessens the effect of small islands and artifacts when calculating the
+     * centroid of a set of polygons.
+     */
+    export function centroid(input: GeoJSON.FeatureCollection<any> | GeoJSON.Feature<any>): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes a Point and calculates the circle polygon given a radius in units and steps for precision;
+     */
+    export function circle(point: GeoJSON.Feature<GeoJSON.Point>, radius: number, steps: number, unit?: Unit): GeoJSON.Feature<GeoJSON.Polygon>;
+
+    /**
+     * Joins attributes FeatureCollection of polygons with a FeatureCollection of
+     * points. Given an `inProperty` on points and an `outProperty` for polygons,
+     * this finds every point that lies within each polygon, collects the `inProperty`
+     * values from those points, and adds them as an array to `outProperty` on the
+     * polygon.
+     */
+    export function collect(polygons: GeoJSON.FeatureCollection<GeoJSON.Polygon>, points: GeoJSON.FeatureCollection<GeoJSON.Point>, inProperty: string, outProperty: string): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+
+    /**
+     * Combines a featurecollection of point, linestring or polygon features into
+     * multipoint, multilinestring or multipolygon featurecollection.
+     */
+    export function combine(collection: GeoJSON.FeatureCollection<GeoJSON.Point>): GeoJSON.FeatureCollection<GeoJSON.MultiPoint>;
+    export function combine(collection: GeoJSON.FeatureCollection<GeoJSON.LineString>): GeoJSON.FeatureCollection<GeoJSON.MultiLineString>;
+    export function combine(collection: GeoJSON.FeatureCollection<GeoJSON.Polygon>): GeoJSON.FeatureCollection<GeoJSON.MultiPolygon>;
 }
 
 declare module "turf" {
@@ -68,10 +94,6 @@ declare module "turf-along" {
 
 declare module "turf-area" {
     export default turf.area;
-}
-
-declare module "turf-collect" {
-    export default turf.collect;
 }
 
 declare module "turf-bbox" {
@@ -96,4 +118,24 @@ declare module "turf-buffer" {
 
 declare module "turf-center" {
     export default turf.center;
+}
+
+declare module "turf-center-of-mass" {
+    export default turf.centerOfMass;
+}
+
+declare module "turf-centroid" {
+    export default turf.centroid;
+}
+
+declare module "turf-circle" {
+    export default turf.circle;
+}
+
+declare module "turf-collect" {
+    export default turf.collect;
+}
+
+declare module "turf-combine" {
+    export default turf.combine;
 }
