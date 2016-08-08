@@ -1,8 +1,5 @@
 /// <reference path="../typings/index.d.ts"/>
 
-import along from "turf-area";
-
-import { along as along2 } from "turf";
 // import { coordEach } from "turf-meta";
 
 // import * as shapefile from "shapefile";
