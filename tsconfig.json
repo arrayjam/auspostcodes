@@ -5,6 +5,7 @@
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "sourceMap": false,
+        "strictNullChecks": true,
         "moduleResolution": "node"
     },
     "files": [

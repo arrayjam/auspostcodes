@@ -19,7 +19,8 @@
     "d3-scale-chromatic": "^1.0.0",
     "d3-selection": "^1.0.0",
     "mapbox-gl": "^0.20.0",
-    "topojson": "^1.6.26"
+    "topojson": "^1.6.26",
+    "turf-meta": "^3.0.12"
   },
   "scripts": {
     "build": "rollup -c"

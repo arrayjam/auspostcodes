@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/1c60d94f29b23144740daae4960ea7309a5b0d4d/turf/turf.d.ts",
+    "raw": "registry:dt/turf#2.0.0+20160626221044",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/1c60d94f29b23144740daae4960ea7309a5b0d4d/turf/turf.d.ts"
+  }
+}
