@@ -1,6 +1,21 @@
 /// <reference path="./index.d.ts"/>
 import * as turf from "turf";
 
+import helpers = require("@turf/helpers");
+const { feature } = helpers;
+
+let geometry = {
+  "type": "Point",
+  "coordinates": [
+    67.5,
+    32.84267363195431,
+  ],
+};
+
+feature(geometry);
+
+
+
 let pointFeature: GeoJSON.Feature<GeoJSON.Point> = {
   "type": "Feature",
   "properties": {},
@@ -233,6 +248,13 @@ let triangleFeature: GeoJSON.Feature<GeoJSON.Polygon> = {
   },
 };
 
+let polygonGeometry: GeoJSON.Polygon = {
+  "type": "Polygon",
+  "coordinates": [
+    [[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
+  ],
+};
+
 turf.along(lineFeature, 0.01);
 turf.along(lineFeature, 10, "kilometers");
 
@@ -283,15 +305,21 @@ turf.envelope(pointFeatureCollection);
 turf.explode(pointFeature);
 turf.explode(pointFeatureCollection);
 
-var multiPt = turf.multiPoint([[0,0],[10,10]]);
-var multiPoly = turf.multiPolygon([[[[0,0],[0,10],[10,10],[10,0],[0,0]]]]);
+turf.flip(polygonFeature);
 
-let pt: GeoJSON.Point = {
-    "type": "Point",
-      "coordinates": [100, 0]
-    };
-let line: GeoJSON.LineString = {
-    "type": "LineString",
-    "coordinates": [ [101, 0], [102, 1] ]
-  };
-let collection = turf.geometryCollection([pt, line]);
+// TODO(yuri): Helper tests
+
+turf.hexGrid(bbox, 10, "degrees", true);
+
+turf.idw(pointFeatureCollection, "value", 10, 100, "miles");
+
+turf.inside(pointFeature, polygonFeature);
+
+turf.intersect(polygonFeature, polygonFeature2);
+
+// TODO(yuri): Invariant import and tests
+
+turf.isolines(pointFeatureCollection, "z-value", 10, [1, 2, 3]);
+
+turf.kinks(polygonFeature);
+turf.kinks(polygonGeometry);

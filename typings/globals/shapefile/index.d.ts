@@ -1,6 +1,6 @@
 /// <reference path="../geojson/index.d.ts"/>
 
-declare module shapefile {
+declare namespace shapefile {
   interface ReaderOptions {
     encoding?: string;
     "ignore-properties"?: boolean;
