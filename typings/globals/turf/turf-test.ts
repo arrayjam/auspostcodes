@@ -263,7 +263,9 @@ turf.bezier(lineFeature, 1);
 turf.bezier(lineFeature, 1, 1);
 
 turf.buffer(pointFeature, 10, "meters");
+turf.buffer(pointFeature, 10);
 turf.buffer(pointFeatureCollection, 10, "metres");
+turf.buffer(pointFeatureCollection, 10);
 
 turf.center(pointFeatureCollection);
 
@@ -356,8 +358,11 @@ turf.geometryCollection([polygonGeometry, polygonGeometry], properties);
 turf.geometryCollection([polygonGeometry, polygonGeometry]);
 
 turf.hexGrid(bbox, 10, "degrees", true);
+turf.hexGrid(bbox, 10, "degrees");
+turf.hexGrid(bbox, 10);
 
 turf.idw(pointFeatureCollection, "value", 10, 100, "miles");
+turf.idw(pointFeatureCollection, "value", 10, 100);
 
 turf.inside(pointFeature, polygonFeature);
 

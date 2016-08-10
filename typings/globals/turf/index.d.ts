@@ -43,7 +43,7 @@ declare namespace turf {
     /**
      * Calculates a buffer for input features for a given radius.
      */
-    export function buffer(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>, distance: number, unit: Unit): GeoJSON.FeatureCollection<GeoJSON.Polygon> | GeoJSON.FeatureCollection<GeoJSON.MultiPolygon> | GeoJSON.Polygon | GeoJSON.MultiPolygon;
+    export function buffer(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>, distance: number, unit?: Unit): GeoJSON.FeatureCollection<GeoJSON.Polygon> | GeoJSON.FeatureCollection<GeoJSON.MultiPolygon> | GeoJSON.Polygon | GeoJSON.MultiPolygon;
 
     /**
      * Takes a featurecollection and returns the absolute center point of all
@@ -206,7 +206,7 @@ declare namespace turf {
      * FeatureCollection of flat-topped hexagonal Polygon features aligned in an
      * "odd-q" vertical grid.
      */
-    export function hexGrid(bbox: BoundingBox, cellSize: number, unit: Unit, triangles: boolean): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+    export function hexGrid(bbox: BoundingBox, cellSize: number, unit?: Unit, triangles?: boolean): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
 
     /**
      * Takes a FeatureCollection of points with known value, a power parameter,
@@ -218,7 +218,7 @@ declare namespace turf {
      * rainfall, temperature, chemical dispersion surface...) from a set of
      * spatially scattered points.
      */
-    export function idw(controlPoints: GeoJSON.FeatureCollection<GeoJSON.Point>, valueField: string, b: number, cellWidth: number, unit: Unit): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+    export function idw(controlPoints: GeoJSON.FeatureCollection<GeoJSON.Point>, valueField: string, b: number, cellWidth: number, unit?: Unit): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
 
     /**
      * Takes a Point and a Polygon or MultiPolygon and determines if the point
