@@ -127,67 +127,79 @@ declare namespace turf {
     export function flip(input: GeoJSON.Feature<any>): GeoJSON.Feature<any>;
     export function flip(input: GeoJSON.FeatureCollection<any>): GeoJSON.FeatureCollection<any>;
 
-    /**
-     * Wraps a GeoJSON Geometry in a GeoJSON Feature.
-     */
-    export function feature(geometry: GeoJSON.GeometryObject, properties?: any): GeoJSON.FeatureCollection<any>;
+    namespace helpers {
+        /**
+         * Wraps a GeoJSON Geometry in a GeoJSON Feature.
+         */
+        export function feature(geometry: GeoJSON.GeometryObject, properties?: any): GeoJSON.FeatureCollection<any>;
 
-    /**
-     * Takes coordinates, properties and returns a new Point feature.
-     */
-    export function point(coordinates: GeoJSON.Position, properties?: any): GeoJSON.Feature<GeoJSON.Point>;
+        /**
+         * Takes coordinates, properties and returns a new Point feature.
+         */
+        export function point(coordinates: GeoJSON.Position, properties?: any): GeoJSON.Feature<GeoJSON.Point>;
 
-    /**
-     * Takes an array of LinearRings, properties and returns a Polygon feature.
-     */
-    export function polygon(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.Polygon>;
+        /**
+         * Takes an array of LinearRings, properties and returns a Polygon feature.
+         */
+        export function polygon(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.Polygon>;
 
-    /**
-     * Takes a coordinate array, properties and returns a LineString.
-     */
-    export function lineString(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.LineString>;
+        /**
+         * Takes a coordinate array, properties and returns a LineString.
+         */
+        export function lineString(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.LineString>;
 
-    /**
-     * Takes one or more Features and creates a FeatureCollection.
-     */
-    export function featureCollection(features: Array<GeoJSON.Feature<any>>): GeoJSON.FeatureCollection<any>;
+        /**
+         * Takes one or more Features and creates a FeatureCollection.
+         */
+        export function featureCollection(features: Array<GeoJSON.Feature<any>>): GeoJSON.FeatureCollection<any>;
 
-    /**
-     * Takes a coordinate array, properties and returns a MultiLineString
-     * Feature.
-     */
-    export function multiLineString(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.MultiLineString>;
+        /**
+         * Takes a coordinate array, properties and returns a MultiLineString
+         * Feature.
+         */
+        export function multiLineString(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.MultiLineString>;
 
-    /**
-     * Takes a coordinate array, properties and returns a MultiPoint Feature.
-     */
-    export function multiPoint(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.MultiPoint>;
+        /**
+         * Takes a coordinate array, properties and returns a MultiPoint Feature.
+         */
+        export function multiPoint(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.MultiPoint>;
 
-    /**
-     * Takes a coordinate array, properties and returns a MultiPolygon Feature.
-     */
-    export function multiPolygon(coordinates: GeoJSON.Position[][][], properties?: any): GeoJSON.Feature<GeoJSON.MultiPolygon>;
+        /**
+         * Takes a coordinate array, properties and returns a MultiPolygon Feature.
+         */
+        export function multiPolygon(coordinates: GeoJSON.Position[][][], properties?: any): GeoJSON.Feature<GeoJSON.MultiPolygon>;
 
-    /**
-     * Takes a coordinate array, properties and returns a GeometryCollection
-     * Feature.
-     */
-    export function geometryCollection(coordinates: Array<GeoJSON.GeometryObject>, properties?: any): GeoJSON.Feature<GeoJSON.GeometryCollection>;
+        /**
+         * Takes a coordinate array, properties and returns a GeometryCollection
+         * Feature.
+         */
+        export function geometryCollection(coordinates: Array<GeoJSON.GeometryObject>, properties?: any): GeoJSON.Feature<GeoJSON.GeometryCollection>;
 
-    /**
-     * Convert a distance measurement from radians to a more friendly unit.
-     */
-    export function radiansToDistance(radians: number, unit?: Unit): number;
+        /**
+         * Convert a distance measurement from radians to a more friendly unit.
+         */
+        export function radiansToDistance(radians: number, unit?: Unit): number;
 
-    /**
-     * Convert a distance measurement from a real-world unit into radians.
-     */
-    export function distanceToRadians(distance: number, unit?: Unit): number;
+        /**
+         * Convert a distance measurement from a real-world unit into radians.
+         */
+        export function distanceToRadians(distance: number, unit?: Unit): number;
 
-    /**
-     * Convert a distance measurement from a real-world unit into degrees
-     */
-    export function distanceToDegrees(distance: number, unit?: Unit): number;
+        /**
+         * Convert a distance measurement from a real-world unit into degrees
+         */
+        export function distanceToDegrees(distance: number, unit?: Unit): number;
+    }
+
+    export import feature = helpers.feature;
+    export import point = helpers.point;
+    export import polygon = helpers.polygon;
+    export import lineString = helpers.lineString;
+    export import featureCollection = helpers.featureCollection;
+    export import multiLineString = helpers.multiLineString;
+    export import multiPoint = helpers.multiPoint;
+    export import multiPolygon = helpers.multiPolygon;
+    export import geometryCollection = helpers.geometryCollection;
 
     /**
      * Takes a bounding box and a cell size in `units` and returns a
@@ -196,9 +208,7 @@ declare namespace turf {
      */
     export function hexGrid(bbox: BoundingBox, cellSize: number, unit: Unit, triangles: boolean): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
 
-
     /**
-     *
      * Takes a FeatureCollection of points with known value, a power parameter,
      * a cell depth, a unit of measurement and returns a FeatureCollection of
      * polygons in a square-grid with an interpolated value property "IDW" for
@@ -222,6 +232,29 @@ declare namespace turf {
      * returns the border; if they don't intersect, returns undefined.
      */
     export function intersect(polygon1: GeoJSON.Feature<GeoJSON.Polygon>, polygon2: GeoJSON.Feature<GeoJSON.Polygon>): GeoJSON.Feature<GeoJSON.Polygon> | undefined | GeoJSON.Feature<GeoJSON.MultiLineString>;
+
+    namespace invariant {
+        /**
+         * Unwrap a coordinate from a Feature with a Point geometry, a Point
+         * geometry, or a single coordinate.
+         */
+        export function getCoord(input: GeoJSON.Feature<GeoJSON.Point> | GeoJSON.Point | GeoJSON.Position): GeoJSON.Position;
+
+        /**
+         * Enforce expectations about types of GeoJSON objects.
+         */
+        export function geojsonType(value: any, type: string, name: string): void;
+
+        /**
+         * Enforce expectations about types of Feature inputs.
+         */
+        export function featureOf(feature: GeoJSON.Feature<any>, type: string, name: string): void;
+
+        /**
+         * Enforce expectations about types of FeatureCollection inputs.
+         */
+        export function collectionOf(featurecollection: GeoJSON.FeatureCollection<any>, type: string, name: string): void;
+    }
 
     /**
      * Takes Points with z-values and an array of value breaks and generates
@@ -323,27 +356,9 @@ declare module "@turf/flip" {
     export default turf.flip;
 }
 
-// TODO(yuri): Fix this. Question asked on StackOverflow: http://stackoverflow.c
-// om/questions/38843426/exporting-namespaces-in-ambient-declarations-while-refe
-// rencing-other-namespaces
-
-// Currently the usage is: import helpers = require("@turf/helpers"); const {
-// feature } = helpers;
 declare module "@turf/helpers" {
-    export = {
-        feature: turf.feature,
-        point: turf.point,
-        polygon: turf.polygon,
-        lineString: turf.lineString,
-        featureCollection: turf.featureCollection,
-        multiLineString: turf.multiLineString,
-        multiPoint: turf.multiPoint,
-        multiPolygon: turf.multiPolygon,
-        geometryCollection: turf.geometryCollection,
-        radiansToDistance: turf.radiansToDistance,
-        distanceToRadians: turf.distanceToRadians,
-        distanceToDegrees: turf.distanceToDegrees,
-    }
+    import helpers = turf.helpers;
+    export = helpers;
 }
 
 declare module "@turf/hex-grid" {
@@ -362,30 +377,8 @@ declare module "@turf/intersect" {
     export default turf.intersect;
 }
 
-declare namespace invariant {
-    /**
-     * Unwrap a coordinate from a Feature with a Point geometry, a Point
-     * geometry, or a single coordinate.
-     */
-    export function getCoord(input: GeoJSON.Feature<GeoJSON.Point> | GeoJSON.Point | GeoJSON.Position): GeoJSON.Position;
-
-    /**
-     * Enforce expectations about types of GeoJSON objects.
-     */
-    export function geojsonType(value: any, type: string, name: string): void;
-
-    /**
-     * Enforce expectations about types of Feature inputs.
-     */
-    export function featureOf(feature: GeoJSON.Feature<any>, type: string, name: string): void;
-
-    /**
-     * Enforce expectations about types of FeatureCollection inputs.
-     */
-    export function collectionOf(featurecollection: GeoJSON.FeatureCollection<any>, type: string, name: string): void;
-}
-
 declare module "@turf/invariant" {
+    import invariant = turf.invariant;
     export = invariant;
 }
 

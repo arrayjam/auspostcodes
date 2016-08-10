@@ -1,21 +1,6 @@
 /// <reference path="./index.d.ts"/>
 import * as turf from "turf";
 
-import helpers = require("@turf/helpers");
-const { feature } = helpers;
-
-let geometry = {
-  "type": "Point",
-  "coordinates": [
-    67.5,
-    32.84267363195431,
-  ],
-};
-
-feature(geometry);
-
-
-
 let pointFeature: GeoJSON.Feature<GeoJSON.Point> = {
   "type": "Feature",
   "properties": {},
