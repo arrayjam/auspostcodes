@@ -266,6 +266,8 @@ declare namespace turf {
      * Takes a Polygon and returns Points at all self-intersections.
      */
     export function kinks(polygon: GeoJSON.Feature<GeoJSON.Polygon> | GeoJSON.Polygon): GeoJSON.FeatureCollection<GeoJSON.Point>;
+
+
 }
 
 declare module "turf" {

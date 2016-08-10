@@ -233,6 +233,11 @@ let triangleFeature: GeoJSON.Feature<GeoJSON.Polygon> = {
   },
 };
 
+let pointGeometry: GeoJSON.Point = {
+  "type": "Point",
+  "coordinates": [0, 0],
+};
+
 let polygonGeometry: GeoJSON.Polygon = {
   "type": "Polygon",
   "coordinates": [
@@ -292,7 +297,63 @@ turf.explode(pointFeatureCollection);
 
 turf.flip(polygonFeature);
 
-// TODO(yuri): Helper tests
+import {
+  feature, point, polygon, lineString, featureCollection,
+  multiLineString, multiPoint, multiPolygon, geometryCollection,
+
+  // Private helpers only available to @turf/helpers, not @turf
+  radiansToDistance, distanceToRadians, distanceToDegrees,
+} from "@turf/helpers";
+
+// Confirm that common @turf/helpers are of the same type
+feature === turf.feature;
+point === turf.point;
+polygon === turf.polygon;
+lineString === turf.lineString;
+featureCollection === turf.featureCollection;
+multiLineString === turf.multiLineString;
+multiPoint === turf.multiPoint;
+multiPolygon === turf.multiPolygon;
+geometryCollection === turf.geometryCollection;
+
+// Test private @turf/helpers functions
+radiansToDistance(10, "nauticalmiles");
+radiansToDistance(10);
+
+distanceToRadians(10, "kilometers");
+distanceToRadians(10);
+
+distanceToDegrees(10, "inches");
+distanceToDegrees(10);
+
+// Test common @turf/helpers functions
+let properties = { "property": "value" };
+
+turf.feature(polygonGeometry, properties);
+turf.feature(polygonGeometry);
+
+turf.point([0, 0], properties);
+turf.point([0, 0]);
+
+turf.polygon(polygonGeometry.coordinates, properties);
+turf.polygon(polygonGeometry.coordinates);
+
+turf.lineString([[0, 0], [1, 1]], properties);
+turf.lineString([[0, 0], [1, 1]]);
+
+turf.featureCollection([lineFeature, pointFeature, pointFeature2]);
+
+turf.multiLineString([[[0, 0], [1, 1]]], properties);
+turf.multiLineString([[[0, 0], [1, 1]]]);
+
+turf.multiPoint([[0, 0], [0, 1]], properties);
+turf.multiPoint([[0, 0], [0, 1]]);
+
+turf.multiPolygon([polygonFeature.geometry.coordinates, polygonFeature2.geometry.coordinates], properties);
+turf.multiPolygon([polygonFeature.geometry.coordinates, polygonFeature2.geometry.coordinates]);
+
+turf.geometryCollection([polygonGeometry, polygonGeometry], properties);
+turf.geometryCollection([polygonGeometry, polygonGeometry]);
 
 turf.hexGrid(bbox, 10, "degrees", true);
 
@@ -302,7 +363,15 @@ turf.inside(pointFeature, polygonFeature);
 
 turf.intersect(polygonFeature, polygonFeature2);
 
-// TODO(yuri): Invariant import and tests
+import { getCoord, geojsonType, featureOf, collectionOf } from "@turf/invariant";
+
+getCoord(pointFeature);
+getCoord(pointGeometry);
+getCoord([0, 0]);
+
+geojsonType(pointGeometry, "Point", "test");
+featureOf(lineFeature, "LineString", "test");
+collectionOf(pointFeatureCollection, "Point", "test");
 
 turf.isolines(pointFeatureCollection, "z-value", 10, [1, 2, 3]);
 
