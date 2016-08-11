@@ -1,7 +1,7 @@
 /// <reference path="../geojson/index.d.ts"/>
 
 declare namespace turf {
-    type Unit = "miles" | "nauticalmiles" | "degrees" | "radians" | "inches" | "yards" | "meters" | "metres" | "kilometers" | "kilometres";
+    type Units = "miles" | "nauticalmiles" | "degrees" | "radians" | "inches" | "yards" | "meters" | "metres" | "kilometers" | "kilometres";
 
     /**
      * A bounding box in WSEN order. (west, south, east, north)
@@ -12,7 +12,7 @@ declare namespace turf {
      * Takes a linestring and returns a Point at a specified distance along the
      * line.
      */
-    export function along(line: GeoJSON.Feature<GeoJSON.LineString>, distance: number, unit?: Unit): GeoJSON.Feature<GeoJSON.Point>;
+    export function along(line: GeoJSON.Feature<GeoJSON.LineString>, distance: number, units?: Units): GeoJSON.Feature<GeoJSON.Point>;
 
     /**
      * Takes a one or more features and returns their area in square meters.
@@ -43,7 +43,7 @@ declare namespace turf {
     /**
      * Calculates a buffer for input features for a given radius.
      */
-    export function buffer(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>, distance: number, unit?: Unit): GeoJSON.FeatureCollection<GeoJSON.Polygon> | GeoJSON.FeatureCollection<GeoJSON.MultiPolygon> | GeoJSON.Polygon | GeoJSON.MultiPolygon;
+    export function buffer(input: GeoJSON.Feature<any> | GeoJSON.FeatureCollection<any>, distance: number, units?: Units): GeoJSON.FeatureCollection<GeoJSON.Polygon> | GeoJSON.FeatureCollection<GeoJSON.MultiPolygon> | GeoJSON.Polygon | GeoJSON.MultiPolygon;
 
     /**
      * Takes a featurecollection and returns the absolute center point of all
@@ -68,7 +68,7 @@ declare namespace turf {
      * Takes a Point and calculates the circle polygon given a radius in units
      * and steps for precision;
      */
-    export function circle(point: GeoJSON.Feature<GeoJSON.Point>, radius: number, steps: number, unit?: Unit): GeoJSON.Feature<GeoJSON.Polygon>;
+    export function circle(point: GeoJSON.Feature<GeoJSON.Point>, radius: number, steps: number, units?: Units): GeoJSON.Feature<GeoJSON.Polygon>;
 
     /**
      * Joins attributes FeatureCollection of polygons with a FeatureCollection
@@ -90,7 +90,7 @@ declare namespace turf {
     /**
      * Takes a set of points and returns a concave hull polygon.
      */
-    export function concave(points: GeoJSON.FeatureCollection<GeoJSON.Point>, maxEdge: number, unit: Unit): GeoJSON.Feature<GeoJSON.Polygon>;
+    export function concave(points: GeoJSON.FeatureCollection<GeoJSON.Point>, maxEdge: number, units: Units): GeoJSON.Feature<GeoJSON.Polygon>;
 
     /**
      * Takes a feature or a featurecollection and returns a convex hull polygon.
@@ -107,7 +107,7 @@ declare namespace turf {
      * Calculates the distance between two points in the specified units. Uses
      * the Haversine formula to account for global curvature.
      */
-    export function distance(origin: GeoJSON.Feature<GeoJSON.Point>, destination: GeoJSON.Feature<GeoJSON.Point>, unit?: Unit): number;
+    export function distance(origin: GeoJSON.Feature<GeoJSON.Point>, destination: GeoJSON.Feature<GeoJSON.Point>, units?: Units): number;
 
     /**
      * Takes any number of features and returns a rectangular polygon that
@@ -178,17 +178,17 @@ declare namespace turf {
         /**
          * Convert a distance measurement from radians to a more friendly unit.
          */
-        export function radiansToDistance(radians: number, unit?: Unit): number;
+        export function radiansToDistance(radians: number, units?: Units): number;
 
         /**
          * Convert a distance measurement from a real-world unit into radians.
          */
-        export function distanceToRadians(distance: number, unit?: Unit): number;
+        export function distanceToRadians(distance: number, units?: Units): number;
 
         /**
          * Convert a distance measurement from a real-world unit into degrees
          */
-        export function distanceToDegrees(distance: number, unit?: Unit): number;
+        export function distanceToDegrees(distance: number, units?: Units): number;
     }
 
     export import feature = helpers.feature;
@@ -206,7 +206,7 @@ declare namespace turf {
      * FeatureCollection of flat-topped hexagonal Polygon features aligned in an
      * "odd-q" vertical grid.
      */
-    export function hexGrid(bbox: BoundingBox, cellSize: number, unit?: Unit, triangles?: boolean): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+    export function hexGrid(bbox: BoundingBox, cellSize: number, units?: Units, triangles?: boolean): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
 
     /**
      * Takes a FeatureCollection of points with known value, a power parameter,
@@ -218,7 +218,7 @@ declare namespace turf {
      * rainfall, temperature, chemical dispersion surface...) from a set of
      * spatially scattered points.
      */
-    export function idw(controlPoints: GeoJSON.FeatureCollection<GeoJSON.Point>, valueField: string, b: number, cellWidth: number, unit?: Unit): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+    export function idw(controlPoints: GeoJSON.FeatureCollection<GeoJSON.Point>, valueField: string, b: number, cellWidth: number, units?: Units): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
 
     /**
      * Takes a Point and a Polygon or MultiPolygon and determines if the point
@@ -267,7 +267,17 @@ declare namespace turf {
      */
     export function kinks(polygon: GeoJSON.Feature<GeoJSON.Polygon> | GeoJSON.Polygon): GeoJSON.FeatureCollection<GeoJSON.Point>;
 
+    /**
+     * Takes a LineString and measures its length in the specifed units.
+     */
+    export function lineDistance(line: GeoJSON.Feature<GeoJSON.LineString>, units?: Units): number;
 
+    /**
+     * Takes a LineString, a start Point and a stop Point, and returns a
+     * subsection of the line in-between those points. The start & stop points
+     * don't need to fall exactly on the line.
+     */
+    export function lineSlice(start: GeoJSON.Feature<GeoJSON.Point>, stop: GeoJSON.Feature<GeoJSON.Point>, line: GeoJSON.Feature<GeoJSON.LineString> | GeoJSON.LineString): GeoJSON.Feature<GeoJSON.LineString>;
 }
 
 declare module "turf" {
@@ -390,4 +400,12 @@ declare module "@turf/isolines" {
 
 declare module "@turf/kinks" {
     export default turf.kinks;
+}
+
+declare module "@turf/line-distance" {
+    export default turf.lineDistance;
+}
+
+declare module "@turf/line-slice" {
+    export default turf.lineSlice;
 }

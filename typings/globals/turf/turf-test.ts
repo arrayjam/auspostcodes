@@ -245,6 +245,11 @@ let polygonGeometry: GeoJSON.Polygon = {
   ],
 };
 
+let lineStringGeometry: GeoJSON.LineString = {
+  type: "LineString",
+  coordinates: [[0, 1], [2, 3]],
+};
+
 turf.along(lineFeature, 0.01);
 turf.along(lineFeature, 10, "kilometers");
 
@@ -366,7 +371,8 @@ turf.idw(pointFeatureCollection, "value", 10, 100);
 
 turf.inside(pointFeature, polygonFeature);
 
-turf.intersect(polygonFeature, polygonFeature2);
+// intersect can return a few types:
+let intersected: GeoJSON.Feature<GeoJSON.Polygon> | undefined | GeoJSON.Feature<GeoJSON.MultiLineString> = turf.intersect(polygonFeature, polygonFeature2);
 
 import { getCoord, geojsonType, featureOf, collectionOf } from "@turf/invariant";
 
@@ -382,3 +388,9 @@ turf.isolines(pointFeatureCollection, "z-value", 10, [1, 2, 3]);
 
 turf.kinks(polygonFeature);
 turf.kinks(polygonGeometry);
+
+turf.lineDistance(lineFeature, "yards");
+turf.lineDistance(lineFeature);
+
+turf.lineSlice(pointFeature, pointFeature2, lineFeature);
+turf.lineSlice(pointFeature, pointFeature2, lineStringGeometry);
