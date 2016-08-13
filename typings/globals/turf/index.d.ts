@@ -233,29 +233,6 @@ declare namespace turf {
      */
     export function intersect(polygon1: GeoJSON.Feature<GeoJSON.Polygon>, polygon2: GeoJSON.Feature<GeoJSON.Polygon>): GeoJSON.Feature<GeoJSON.Polygon> | undefined | GeoJSON.Feature<GeoJSON.MultiLineString>;
 
-    namespace invariant {
-        /**
-         * Unwrap a coordinate from a Feature with a Point geometry, a Point
-         * geometry, or a single coordinate.
-         */
-        export function getCoord(input: GeoJSON.Feature<GeoJSON.Point> | GeoJSON.Point | GeoJSON.Position): GeoJSON.Position;
-
-        /**
-         * Enforce expectations about types of GeoJSON objects.
-         */
-        export function geojsonType(value: any, type: string, name: string): void;
-
-        /**
-         * Enforce expectations about types of Feature inputs.
-         */
-        export function featureOf(feature: GeoJSON.Feature<any>, type: string, name: string): void;
-
-        /**
-         * Enforce expectations about types of FeatureCollection inputs.
-         */
-        export function collectionOf(featurecollection: GeoJSON.FeatureCollection<any>, type: string, name: string): void;
-    }
-
     /**
      * Takes Points with z-values and an array of value breaks and generates
      * isolines.
@@ -278,6 +255,74 @@ declare namespace turf {
      * don't need to fall exactly on the line.
      */
     export function lineSlice(start: GeoJSON.Feature<GeoJSON.Point>, stop: GeoJSON.Feature<GeoJSON.Point>, line: GeoJSON.Feature<GeoJSON.LineString> | GeoJSON.LineString): GeoJSON.Feature<GeoJSON.LineString>;
+
+    /**
+     * Takes a LineString, a specified distance along the line to a start Point,
+     * a specifed distance along the line to a stop point and returns a
+     * subsection of the line between those points. This can be useful for
+     * extracting only the part of a route between two distances.
+     */
+    export function lineSliceAlong(line: GeoJSON.Feature<GeoJSON.LineString>, startDistance: number, stopDistance: number, units?: Units): GeoJSON.Feature<GeoJSON.LineString>;
+}
+
+declare namespace invariant {
+    /**
+     * Unwrap a coordinate from a Feature with a Point geometry, a Point
+     * geometry, or a single coordinate.
+     */
+    export function getCoord(input: GeoJSON.Feature<GeoJSON.Point> | GeoJSON.Point | GeoJSON.Position): GeoJSON.Position;
+
+    /**
+     * Enforce expectations about types of GeoJSON objects.
+     */
+    export function geojsonType(value: any, type: string, name: string): void;
+
+    /**
+     * Enforce expectations about types of Feature inputs.
+     */
+    export function featureOf(feature: GeoJSON.Feature<any>, type: string, name: string): void;
+
+    /**
+     * Enforce expectations about types of FeatureCollection inputs.
+     */
+    export function collectionOf(featurecollection: GeoJSON.FeatureCollection<any>, type: string, name: string): void;
+}
+
+declare namespace meta {
+    /**
+     * Iterate over coordinates in any GeoJSON object, similar to Array.forEach.
+     */
+    export function coordEach(object: any, callback: (coord: GeoJSON.Position) => void, excludeWrapCoord: boolean): void;
+
+    /**
+     * Reduce coordinates in any GeoJSON object into a single value similar to
+     * how Array.reduce works. However, in this case we lazily run the
+     * reduction, so an array of all coordinates is unnecessary.
+     */
+    export function coordReduce<T>(object: any, callback: (memo: T, coord: GeoJSON.Position) => T, memo: T, excludeWrapCoord: boolean): T;
+
+    /**
+     * Iterate over property objects in any GeoJSON object, similar to
+     * Array.forEach.
+     */
+    export function propEach(object: any, callback: (properties: any) => void): void;
+
+    /**
+     * Reduce properties in any GeoJSON object into a single value similar to
+     * how Array.reduce works. However, in this case we lazily run the
+     * reduction, so an array of all properties is unnecessary.
+     */
+    export function propReduce<T>(object: any, callback: (memo: T, prop: any) => T, memo: T): T;
+
+    /**
+     * Iterate over features in any GeoJSON object, similar to Array.forEach.
+     */
+    export function featureEach(object: any, callback: (feature: GeoJSON.Feature<any>) => void): void;
+
+    /**
+     * Get all coordinates from any GeoJSNO object, returning an array of coordinate arrays.
+     */
+    export function coordAll(object: any): GeoJSON.Position[];
 }
 
 declare module "turf" {
@@ -390,7 +435,6 @@ declare module "@turf/intersect" {
 }
 
 declare module "@turf/invariant" {
-    import invariant = turf.invariant;
     export = invariant;
 }
 
@@ -408,4 +452,12 @@ declare module "@turf/line-distance" {
 
 declare module "@turf/line-slice" {
     export default turf.lineSlice;
+}
+
+declare module "@turf/line-slice-along" {
+    export default turf.lineSliceAlong;
+}
+
+declare module "@turf/meta" {
+    export = meta;
 }

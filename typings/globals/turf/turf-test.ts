@@ -394,3 +394,29 @@ turf.lineDistance(lineFeature);
 
 turf.lineSlice(pointFeature, pointFeature2, lineFeature);
 turf.lineSlice(pointFeature, pointFeature2, lineStringGeometry);
+
+turf.lineSliceAlong(lineFeature, 0, 100, "yards");
+turf.lineSliceAlong(lineFeature, 0, 100);
+
+import { coordEach, coordReduce, propEach, propReduce, featureEach, coordAll } from "@turf/meta";
+
+coordEach(pointFeature, (coord) => console.log(coord[0], coord[1]), false);
+
+let arrayReduce: number[] = coordReduce(pointFeatureCollection, (prev, curr) => {
+  prev.push(curr);
+  return prev;
+}, [], false);
+let stringReduce: string = coordReduce(pointFeatureCollection, (prev, curr) => prev + curr.toString(), "", false);
+
+propEach(pointFeatureCollection, prop => console.log(prop));
+
+let propCombine: any = propReduce(pointFeatureCollection, (prev, curr) => {
+  for (let key in curr) {
+    prev[key] = curr[key];
+  }
+  return prev;
+}, {});
+
+featureEach(pointFeatureCollection, feature => console.log(feature));
+
+coordAll(pointFeatureCollection);
