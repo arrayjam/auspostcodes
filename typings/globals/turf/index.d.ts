@@ -127,80 +127,6 @@ declare namespace turf {
     export function flip(input: GeoJSON.Feature<any>): GeoJSON.Feature<any>;
     export function flip(input: GeoJSON.FeatureCollection<any>): GeoJSON.FeatureCollection<any>;
 
-    namespace helpers {
-        /**
-         * Wraps a GeoJSON Geometry in a GeoJSON Feature.
-         */
-        export function feature(geometry: GeoJSON.GeometryObject, properties?: any): GeoJSON.FeatureCollection<any>;
-
-        /**
-         * Takes coordinates, properties and returns a new Point feature.
-         */
-        export function point(coordinates: GeoJSON.Position, properties?: any): GeoJSON.Feature<GeoJSON.Point>;
-
-        /**
-         * Takes an array of LinearRings, properties and returns a Polygon feature.
-         */
-        export function polygon(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.Polygon>;
-
-        /**
-         * Takes a coordinate array, properties and returns a LineString.
-         */
-        export function lineString(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.LineString>;
-
-        /**
-         * Takes one or more Features and creates a FeatureCollection.
-         */
-        export function featureCollection(features: Array<GeoJSON.Feature<any>>): GeoJSON.FeatureCollection<any>;
-
-        /**
-         * Takes a coordinate array, properties and returns a MultiLineString
-         * Feature.
-         */
-        export function multiLineString(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.MultiLineString>;
-
-        /**
-         * Takes a coordinate array, properties and returns a MultiPoint Feature.
-         */
-        export function multiPoint(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.MultiPoint>;
-
-        /**
-         * Takes a coordinate array, properties and returns a MultiPolygon Feature.
-         */
-        export function multiPolygon(coordinates: GeoJSON.Position[][][], properties?: any): GeoJSON.Feature<GeoJSON.MultiPolygon>;
-
-        /**
-         * Takes a coordinate array, properties and returns a GeometryCollection
-         * Feature.
-         */
-        export function geometryCollection(coordinates: Array<GeoJSON.GeometryObject>, properties?: any): GeoJSON.Feature<GeoJSON.GeometryCollection>;
-
-        /**
-         * Convert a distance measurement from radians to a more friendly unit.
-         */
-        export function radiansToDistance(radians: number, units?: Units): number;
-
-        /**
-         * Convert a distance measurement from a real-world unit into radians.
-         */
-        export function distanceToRadians(distance: number, units?: Units): number;
-
-        /**
-         * Convert a distance measurement from a real-world unit into degrees
-         */
-        export function distanceToDegrees(distance: number, units?: Units): number;
-    }
-
-    export import feature = helpers.feature;
-    export import point = helpers.point;
-    export import polygon = helpers.polygon;
-    export import lineString = helpers.lineString;
-    export import featureCollection = helpers.featureCollection;
-    export import multiLineString = helpers.multiLineString;
-    export import multiPoint = helpers.multiPoint;
-    export import multiPolygon = helpers.multiPolygon;
-    export import geometryCollection = helpers.geometryCollection;
-
     /**
      * Takes a bounding box and a cell size in `units` and returns a
      * FeatureCollection of flat-topped hexagonal Polygon features aligned in an
@@ -263,6 +189,94 @@ declare namespace turf {
      * extracting only the part of a route between two distances.
      */
     export function lineSliceAlong(line: GeoJSON.Feature<GeoJSON.LineString>, startDistance: number, stopDistance: number, units?: Units): GeoJSON.Feature<GeoJSON.LineString>;
+
+    /**
+     * Takes two Points and returns a Point midway between them. The midpoint is
+     * calculated geodesically, meaning the curvature of the earth is taken into
+     * account.
+     */
+    export function midpoint(from: GeoJSON.Feature<GeoJSON.Point>, to: GeoJSON.Feature<GeoJSON.Point>): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes a reference Point and a FeatureCollection of Point Features and
+     * returns the point from the FeatureCollection closest to the reference.
+     * This calculation is geodesic.
+     */
+    export function nearest(target: GeoJSON.Feature<GeoJSON.Point>, points: GeoJSON.FeatureCollection<GeoJSON.Point>): GeoJSON.Feature<GeoJSON.Point>;
+
+    export import feature = helpers.feature;
+    export import point = helpers.point;
+    export import polygon = helpers.polygon;
+    export import lineString = helpers.lineString;
+    export import featureCollection = helpers.featureCollection;
+    export import multiLineString = helpers.multiLineString;
+    export import multiPoint = helpers.multiPoint;
+    export import multiPolygon = helpers.multiPolygon;
+    export import geometryCollection = helpers.geometryCollection;
+}
+
+declare namespace helpers {
+    /**
+     * Wraps a GeoJSON Geometry in a GeoJSON Feature.
+     */
+    export function feature(geometry: GeoJSON.GeometryObject, properties?: any): GeoJSON.FeatureCollection<any>;
+
+    /**
+     * Takes coordinates, properties and returns a new Point feature.
+     */
+    export function point(coordinates: GeoJSON.Position, properties?: any): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes an array of LinearRings, properties and returns a Polygon feature.
+     */
+    export function polygon(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.Polygon>;
+
+    /**
+     * Takes a coordinate array, properties and returns a LineString.
+     */
+    export function lineString(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.LineString>;
+
+    /**
+     * Takes one or more Features and creates a FeatureCollection.
+     */
+    export function featureCollection(features: Array<GeoJSON.Feature<any>>): GeoJSON.FeatureCollection<any>;
+
+    /**
+     * Takes a coordinate array, properties and returns a MultiLineString
+     * Feature.
+     */
+    export function multiLineString(coordinates: GeoJSON.Position[][], properties?: any): GeoJSON.Feature<GeoJSON.MultiLineString>;
+
+    /**
+     * Takes a coordinate array, properties and returns a MultiPoint Feature.
+     */
+    export function multiPoint(coordinates: GeoJSON.Position[], properties?: any): GeoJSON.Feature<GeoJSON.MultiPoint>;
+
+    /**
+     * Takes a coordinate array, properties and returns a MultiPolygon Feature.
+     */
+    export function multiPolygon(coordinates: GeoJSON.Position[][][], properties?: any): GeoJSON.Feature<GeoJSON.MultiPolygon>;
+
+    /**
+     * Takes a coordinate array, properties and returns a GeometryCollection
+     * Feature.
+     */
+    export function geometryCollection(coordinates: Array<GeoJSON.GeometryObject>, properties?: any): GeoJSON.Feature<GeoJSON.GeometryCollection>;
+
+    /**
+     * Convert a distance measurement from radians to a more friendly unit.
+     */
+    export function radiansToDistance(radians: number, units?: turf.Units): number;
+
+    /**
+     * Convert a distance measurement from a real-world unit into radians.
+     */
+    export function distanceToRadians(distance: number, units?: turf.Units): number;
+
+    /**
+     * Convert a distance measurement from a real-world unit into degrees
+     */
+    export function distanceToDegrees(distance: number, units?: turf.Units): number;
 }
 
 declare namespace invariant {
@@ -414,7 +428,6 @@ declare module "@turf/flip" {
 }
 
 declare module "@turf/helpers" {
-    import helpers = turf.helpers;
     export = helpers;
 }
 
@@ -460,4 +473,12 @@ declare module "@turf/line-slice-along" {
 
 declare module "@turf/meta" {
     export = meta;
+}
+
+declare module "@turf/midpoint" {
+    export default turf.midpoint;
+}
+
+declare module "@turf/nearest" {
+    export default turf.nearest;
 }

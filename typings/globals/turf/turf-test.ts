@@ -420,3 +420,7 @@ let propCombine: any = propReduce(pointFeatureCollection, (prev, curr) => {
 featureEach(pointFeatureCollection, feature => console.log(feature));
 
 coordAll(pointFeatureCollection);
+
+turf.midpoint(pointFeature, pointFeature2);
+
+turf.nearest(pointFeature, pointFeatureCollection);
