@@ -1,4 +1,4 @@
-/// <reference path="../geojson/index.d.ts"/>
+/// <reference types="geojson"/>
 
 declare namespace turf {
     type Units = "miles" | "nauticalmiles" | "degrees" | "radians" | "inches" | "yards" | "meters" | "metres" | "kilometers" | "kilometres";
@@ -204,6 +204,124 @@ declare namespace turf {
      */
     export function nearest(target: GeoJSON.Feature<GeoJSON.Point>, points: GeoJSON.FeatureCollection<GeoJSON.Point>): GeoJSON.Feature<GeoJSON.Point>;
 
+    /**
+     * Takes a triangular plane as a Polygon and a Point within that trangle and
+     * returns the z-value at that point. The Polygon needs to have properties
+     * `a`, `b` and `c` that define the values at its three corners.
+     */
+    export function planepoint(point: GeoJSON.Feature<GeoJSON.Point>, triangle: GeoJSON.Feature<GeoJSON.Polygon>): number;
+
+    /**
+     * Takes a bounding box and a cell depth and returns a set of Points in a
+     * grid.
+     */
+    export function pointGrid(bbox: BoundingBox, cellSize: number, units?: Units): GeoJSON.FeatureCollection<GeoJSON.Point>;
+
+    /**
+     * Takes a Point and a LineString and calculates the closest Point on the
+     * LineString.
+     */
+    export function pointOnLine(line: GeoJSON.Feature<GeoJSON.LineString>, point: GeoJSON.Feature<GeoJSON.Point>, units?: Units): GeoJSON.Feature<GeoJSON.Point>;
+
+    /**
+     * Takes a feature and returns a Point guaranteed to be on the surface
+     * of the feature.
+     *
+     * * Given a Polygon, the point will be in the area of the polygon.
+     * * Given a LineString, the point will be along the string.
+     * * Given a Point, the point will the same as the input.
+     */
+    export function pointOnSurface(input: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.LineString | GeoJSON.Point> | GeoJSON.FeatureCollection<GeoJSON.Polygon | GeoJSON.LineString | GeoJSON.Point>): GeoJSON.Feature<GeoJSON.Point>;
+
+    interface RandomPointOptions {
+        bbox?: BoundingBox;
+    }
+
+    interface RandomPolygonOptions {
+        num_vertices?: number;
+        max_radial_length?: number;
+        bbox?: BoundingBox;
+    }
+
+    /**
+     * Generates random GeoJSON Points.
+     */
+    export function random(type: "point" | "points", count?: number, options?: RandomPointOptions): GeoJSON.FeatureCollection<GeoJSON.Point>;
+
+    /**
+     * Generates random GeoJSON Polygons.
+     */
+    export function random(type: "polygon" | "polygons", count?: number, options?: RandomPolygonOptions): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+
+    /**
+     * Takes a FeatureCollection and returns a FeatureCollection with given
+     * number of Features at random.
+     */
+    export function sample<T extends GeoJSON.GeometryObject | GeoJSON.GeometryCollection>(input: GeoJSON.FeatureCollection<T>, number: number): GeoJSON.FeatureCollection<T>;
+
+    type SimplifiableGeometry = GeoJSON.LineString | GeoJSON.Polygon | GeoJSON.MultiLineString | GeoJSON.MultiPolygon;
+
+    /**
+     * Takes a LineString or Polygon and returns a simplified version.
+     * Internally uses simplify-js to perform simplification.
+     */
+    export function simplify<T extends GeoJSON.Feature<SimplifiableGeometry> | GeoJSON.FeatureCollection<SimplifiableGeometry> | GeoJSON.GeometryCollection>(feature: T, tolerance: number, highQuality: boolean): T;
+
+    /**
+     * Takes a bounding box and calculates the minimum square bounding box that
+     * would contain the input.
+     */
+    export function square(bbox: BoundingBox): BoundingBox;
+
+    /**
+     * Takes a bounding box, a cell depth and returns a set of square Polygons
+     * in a grid.
+     */
+    export function squareGrid(bbox: BoundingBox, cellSize: number, units?: Units): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+
+    /**
+     * Takes a set of Points, a set of Polygons and a performs a spatial join.
+     */
+    export function tag(points: GeoJSON.FeatureCollection<GeoJSON.Point>, polygons: GeoJSON.FeatureCollection<GeoJSON.Polygon>, inField: string, outField: string): GeoJSON.FeatureCollection<GeoJSON.Point>;
+
+    /**
+     * Tesselates a Feature<Polygon> into a FeatureCollection<Polygon> of
+     * triangles using earcut.
+     */
+    export function tesselate(polygon: GeoJSON.Feature<GeoJSON.Polygon>): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+
+    /**
+     * Takes a set of Points, the name of a z-value property and creates a
+     * Triangulated Irregular Network (or TIN for short), returned as a
+     * collection of Polygons. These are often used for developing elevation
+     * contour maps or stepped heat visualizations.
+     *
+     * This triangulates the points, and adds properties called `a`, `b`, and
+     * `c` representing the value of the given `propertyName` at each of the
+     * points that represent the corners of the triangle.
+     */
+    export function tin(points: GeoJSON.FeatureCollection<GeoJSON.Point>, zProperty?: string): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+
+    /**
+     * Takes a bounding box, a cell depth and returns a set of triangular
+     * Polygons in a grid.
+     */
+    export function triangleGrid(bbox: BoundingBox, cellSize: number, units?: Units): GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+
+
+    /**
+     * Takes two or more Polygons and returns a combined Polygon. If the input
+     * Polygons are not contiguous, this function returns a MultiPolygon
+     * Feature.
+     */
+    export function union(...polygons: GeoJSON.Feature<GeoJSON.Polygon>[]): GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>;
+
+    /**
+     * Takes a set of Pionts, a set of Polygons and returns the Points that fall
+     * within the Polygons.
+     */
+    export function within(points: GeoJSON.FeatureCollection<GeoJSON.Point>, polygons: GeoJSON.FeatureCollection<GeoJSON.Polygon>): GeoJSON.FeatureCollection<GeoJSON.Point>;
+
     export import feature = helpers.feature;
     export import point = helpers.point;
     export import polygon = helpers.polygon;
@@ -334,7 +452,8 @@ declare namespace meta {
     export function featureEach(object: any, callback: (feature: GeoJSON.Feature<any>) => void): void;
 
     /**
-     * Get all coordinates from any GeoJSNO object, returning an array of coordinate arrays.
+     * Get all coordinates from any GeoJSNO object, returning an array of
+     * coordinate arrays.
      */
     export function coordAll(object: any): GeoJSON.Position[];
 }
@@ -481,4 +600,60 @@ declare module "@turf/midpoint" {
 
 declare module "@turf/nearest" {
     export default turf.nearest;
+}
+
+declare module "@turf/planepoint" {
+    export default turf.planepoint;
+}
+
+declare module "@turf/point-grid" {
+    export default turf.pointGrid;
+}
+
+declare module "@turf/point-on-line" {
+    export default turf.pointOnLine;
+}
+
+declare module "@turf/point-on-surface" {
+    export default turf.pointOnSurface;
+}
+
+declare module "@turf/random" {
+    export default turf.random;
+}
+
+declare module "@turf/sample" {
+    export default turf.sample;
+}
+
+declare module "@turf/simplify" {
+    export default turf.simplify;
+}
+
+declare module "@turf/square" {
+    export default turf.square;
+}
+
+declare module "@turf/square-grid" {
+    export default turf.squareGrid;
+}
+
+declare module "@turf/tag" {
+    export default turf.tag;
+}
+
+declare module "@turf/tesselate" {
+    export default turf.tesselate;
+}
+
+declare module "@turf/triangle-grid" {
+    export default turf.triangleGrid;
+}
+
+declare module "@turf/union" {
+    export default turf.union;
+}
+
+declare module "@turf/within" {
+    export default turf.within;
 }

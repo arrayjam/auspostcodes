@@ -424,3 +424,59 @@ coordAll(pointFeatureCollection);
 turf.midpoint(pointFeature, pointFeature2);
 
 turf.nearest(pointFeature, pointFeatureCollection);
+
+turf.planepoint(pointFeature, triangleFeature);
+
+turf.pointGrid(bbox, 20, "miles");
+turf.pointGrid(bbox, 20);
+
+turf.pointOnLine(lineFeature, pointFeature, "nauticalmiles");
+turf.pointOnLine(lineFeature, pointFeature);
+
+turf.pointOnSurface(polygonFeature);
+turf.pointOnSurface(lineFeature);
+turf.pointOnSurface(pointFeature);
+turf.pointOnSurface(polygonFeatureCollection);
+turf.pointOnSurface(lineFeatureCollection);
+turf.pointOnSurface(pointFeatureCollection);
+
+turf.random("points", 10, { bbox: bbox });
+turf.random("points", 10, {});
+turf.random("points", 10);
+turf.random("points");
+
+turf.random("polygon", 10, {
+  num_vertices: 10,
+  max_radial_length: 10,
+  bbox: bbox,
+});
+turf.random("polygon", 10);
+turf.random("polygon");
+
+turf.sample(pointFeatureCollection, 10);
+
+turf.simplify(polygonFeature, 10, false);
+turf.simplify(polygonFeatureCollection, 10, false);
+turf.simplify(triangleFeature, 10, false);
+turf.simplify(lineFeature, 10, false);
+turf.simplify(lineFeatureCollection, 10, false);
+
+turf.square(bbox);
+
+turf.squareGrid(bbox, 20, "yards");
+turf.squareGrid(bbox, 20);
+
+turf.tag(pointFeatureCollection, polygonFeatureCollection, "inField", "outField");
+
+turf.tesselate(polygonFeature);
+
+turf.tin(pointFeatureCollection, "property");
+turf.tin(pointFeatureCollection);
+
+turf.triangleGrid(bbox, 10, "miles");
+turf.triangleGrid(bbox, 10);
+
+turf.union(polygonFeature);
+turf.union(polygonFeature, polygonFeature2, ...polygonFeatureCollection.features);
+
+turf.within(pointFeatureCollection, polygonFeatureCollection);
